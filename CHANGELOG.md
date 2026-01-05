@@ -1,12 +1,11 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v0.2.3-blue)
+![Version](https://img.shields.io/badge/version-v0.2.4-blue)
 All notable changes to this project will be documented in this file.
 
-## [0.2.3] - 2026-01-05
+## [0.2.4] - 2026-01-05
 ### Fixed
-- Fixed crash when Gemini API returns an error by adding robust response validation.
-- Added input validation to prevent accidental swapping of Gemini API Keys and OAuth Client IDs.
+- Switched Gemini API endpoint from `v1beta` to stable `v1` to resolve 404 errors for the `gemini-1.5-flash` model.
 
 ## [0.2.2] - 2026-01-05
 ### Fixed
