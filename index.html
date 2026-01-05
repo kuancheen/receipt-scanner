@@ -25,7 +25,6 @@
                 <h1>Receipt Scanner AI</h1>
             </div>
             <p class="tagline">Intelligent receipt summarization and Google Sheets export</p>
-            <div id="status-message" class="status-box hidden"></div>
         </header>
 
         <main>
@@ -59,6 +58,7 @@
                     <button id="save-config" class="btn secondary">Save Configuration</button>
                     <button id="clear-config" class="btn outline">Clear All</button>
                 </div>
+                <div id="config-status" class="status-box hidden"></div>
             </section>
 
             <section class="upload-section card">
@@ -79,6 +79,7 @@
                 <div id="preview-container" class="hidden">
                     <img id="image-preview" src="" alt="Receipt Preview">
                     <button id="scan-btn" class="btn primary">Summarize with AI</button>
+                    <div id="scan-status" class="status-box hidden"></div>
                 </div>
             </section>
 
@@ -102,13 +103,14 @@
                         <input type="text" id="res-amount">
                     </div>
                     <button id="export-btn" class="btn success">Export to Google Sheet</button>
+                    <div id="export-status" class="status-box hidden"></div>
                 </div>
             </section>
         </main>
 
         <footer>
             <p>
-                v0.2.0 |
+                v0.2.1 |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/README.md"
                     target="_blank">README</a> |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/CHANGELOG.md"
@@ -120,7 +122,7 @@
             </p>
         </footer>
     </div>
-    <script src="app.js?v=0.2.0"></script>
+    <script src="app.js?v=0.2.1"></script>
     <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 </body>
 

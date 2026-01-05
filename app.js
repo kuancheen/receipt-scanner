@@ -35,20 +35,42 @@ function saveConfig() {
         config[key] = val;
         localStorage.setItem(key, val);
     });
-    showMessage('Configuration saved!', 'success');
+    showMessage('Configuration saved!', 'success', 'config-status');
     initGoogleAuth(); // Re-init auth if client ID changed
 }
 
 function clearConfig() {
-    if (confirm('Are you sure you want to clear all configurations?')) {
-        CONFIG_KEYS.forEach(key => {
-            localStorage.removeItem(key);
-            document.getElementById(key).value = '';
-            delete config[key];
-        });
-        showMessage('Configuration cleared', 'info');
-        initGoogleAuth();
+    const btn = document.getElementById('clear-config');
+    if (!btn.dataset.confirming) {
+        btn.dataset.confirming = 'true';
+        btn.dataset.originalText = btn.textContent;
+        btn.textContent = 'Are you sure? Click again to confirm';
+        btn.classList.add('confirming');
+
+        // Timeout to revert button
+        if (window.clearTimeout) clearTimeout(window.clearTimeout);
+        window.clearTimeout = setTimeout(() => {
+            btn.textContent = btn.dataset.originalText;
+            btn.classList.remove('confirming');
+            delete btn.dataset.confirming;
+        }, 3000);
+        return;
     }
+
+    // Second click logic
+    CONFIG_KEYS.forEach(key => {
+        localStorage.removeItem(key);
+        document.getElementById(key).value = '';
+        delete config[key];
+    });
+
+    btn.textContent = btn.dataset.originalText;
+    btn.classList.remove('confirming');
+    delete btn.dataset.confirming;
+    if (window.clearTimeout) clearTimeout(window.clearTimeout);
+
+    showMessage('Configuration cleared', 'info', 'config-status');
+    initGoogleAuth();
 }
 
 function toggleVisibility(id, btn) {
@@ -98,7 +120,7 @@ function setupEventListeners() {
 
 function handleFile(file) {
     if (!file.type.startsWith('image/')) {
-        showMessage('Please upload an image file (PNG, JPG).', 'error');
+        showMessage('Please upload an image file (PNG, JPG).', 'error', 'scan-status');
         return;
     }
 
@@ -144,7 +166,7 @@ function handleSignIn() {
     if (!tokenClient) {
         const clientId = config['oauth-client-id'];
         if (!clientId) {
-            showMessage('Please enter an OAuth Client ID in the Configuration section first.', 'error');
+            showMessage('Please enter an OAuth Client ID in the Configuration section first.', 'error', 'scan-status');
             return;
         }
 
@@ -152,7 +174,7 @@ function handleSignIn() {
         initGoogleAuth();
 
         if (!tokenClient) {
-            showMessage('The Google Identity library is still loading. Please wait a moment and try again.', 'info');
+            showMessage('The Google Identity library is still loading. Please wait a moment and try again.', 'info', 'scan-status');
             return;
         }
     }
@@ -174,7 +196,7 @@ function updateAuthState(isSignedIn) {
 async function summarizeReceipt() {
     const apiKey = config['gemini-api-key'];
     if (!apiKey) {
-        showMessage('Please enter your Gemini API Key in the Configuration section.', 'error');
+        showMessage('Please enter your Gemini API Key in the Configuration section.', 'error', 'scan-status');
         return;
     }
 
@@ -223,7 +245,7 @@ Ensure the response is ONLY the JSON object.`;
 
     } catch (error) {
         console.error('Scan Error:', error);
-        showMessage('Failed to analyze receipt. Check your API key or image quality.', 'error');
+        showMessage('Failed to analyze receipt. Check your API key or image quality.', 'error', 'scan-status');
     } finally {
         toggleLoading(false);
     }
@@ -239,12 +261,12 @@ function toggleLoading(isLoading) {
 async function exportToSheet() {
     const spreadsheetId = config['spreadsheet-id'];
     if (!spreadsheetId) {
-        showMessage('Please enter a Google Sheet ID in the Configuration section.', 'error');
+        showMessage('Please enter a Google Sheet ID in the Configuration section.', 'error', 'export-status');
         return;
     }
 
     if (!accessToken) {
-        showMessage('Please sign in with Google first.', 'info');
+        showMessage('Please sign in with Google first.', 'info', 'export-status');
         return;
     }
 
@@ -267,25 +289,27 @@ async function exportToSheet() {
         });
 
         if (response.ok) {
-            showMessage('Transfer successful! Check your Google Sheet.', 'success');
+            showMessage('Transfer successful! Check your Google Sheet.', 'success', 'export-status');
         } else {
             const err = await response.json();
             throw new Error(err.error.message);
         }
     } catch (error) {
         console.error('Export Error:', error);
-        showMessage('Failed to export to Google Sheets: ' + error.message, 'error');
+        showMessage('Failed to export to Google Sheets: ' + error.message, 'error', 'export-status');
     }
 }
 
-function showMessage(text, type = 'info') {
-    const msgBox = document.getElementById('status-message');
+function showMessage(text, type = 'info', targetId = null) {
+    const msgBox = targetId ? document.getElementById(targetId) : null;
+    if (!msgBox) return;
+
     msgBox.textContent = text;
     msgBox.className = `status-box status-${type}`;
 
-    // Auto-hide after 5 seconds
-    if (window.statusTimeout) clearTimeout(window.statusTimeout);
-    window.statusTimeout = setTimeout(() => {
+    const timeoutKey = `timeout_${targetId}`;
+    if (window[timeoutKey]) clearTimeout(window[timeoutKey]);
+    window[timeoutKey] = setTimeout(() => {
         msgBox.classList.add('hidden');
     }, 5000);
 }

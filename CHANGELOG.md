@@ -3,6 +3,11 @@
 ![Version](https://img.shields.io/badge/version-v0.1.2-blue)
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-01-05
+### Refined
+- Replaced the browser `confirm()` pop-up with a sleek, two-step in-line confirmation button for "Clear All".
+- Moved status messages inside their respective action cards (Configuration, Scan, and Results) for better context.
+
 ## [0.2.0] - 2026-01-05
 ### Added
 - Modern in-line messaging system (replacing browser alerts) with themed feedback (success, error, info).
