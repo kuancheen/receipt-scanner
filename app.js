@@ -452,6 +452,17 @@ function showSheetSelectorModal(sheets) {
     const cancelBtn = content.querySelector('#cancel-export');
 
     cancelBtn.onclick = hideModal;
+
+    // Handle Enter keypress for quick export
+    const handleKeydown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            confirmBtn.click();
+        }
+    };
+    dropdown.onkeydown = handleKeydown;
+    content.querySelector('#new-sheet-name').onkeydown = handleKeydown;
+
     confirmBtn.onclick = async () => {
         const isNew = !newContainer.classList.contains('hidden');
         const sheetName = isNew ? document.getElementById('new-sheet-name').value.trim() : dropdown.value;

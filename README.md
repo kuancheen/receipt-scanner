@@ -1,6 +1,6 @@
-# 🧾 Receipt Scanner
+# 🧾 Receipt Scanner (v1.2.0)
 
-![Version](https://img.shields.io/badge/version-v1.1.5-blue)
+![Version](https://img.shields.io/badge/version-v1.2.0-blue)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Semantic Versioning](https://img.shields.io/badge/semver-2.0.0-blue)
 ![Views](https://hits.sh/kuancheen.github.io/receipt-scanner.svg?view=today-total&style=flat&label=👁️%20Views&extraCount=0&color=6366f1)
@@ -13,9 +13,9 @@
 - 📸 **Batch Processing**: Upload and analyze multiple receipts at once.
 - 🤖 **Gemini 2.0 Flash**: State-of-the-art AI for accurate extraction.
 - 📊 **Table View**: Review all results in a clean, interactive table.
-- 🖼️ **Image Viewer**: Full-screen preview modal with paging and zoom.
-- 📝 **Smart Export**: Automatic headers, freezing, and filtering in Google Sheets.
-- 📋 **TSV Clipboard**: Copy results in a format ready for Excel/Sheets.
+- 🔍 **Pro Inspection Viewer**: Full-screen modal with multi-level zoom (4x) and mouse-tracking pan.
+- 📝 **Smart Sheet Export**: Automatic headers, freezing, and filtering with automated column trimming.
+- 📋 **TSV Clipboard**: Copy results in a format optimized for Excel/Sheets.
 - 🔒 **Privacy First**: Client-side processing (API keys stored locally).
 
 ## 🚀 Quick Start

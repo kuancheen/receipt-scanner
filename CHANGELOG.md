@@ -1,32 +1,39 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.1.5-blue)
+![Version](https://img.shields.io/badge/version-v1.2.0-blue)
 All notable changes to this project will be documented in this file.
 
-## [1.1.5] - 2026-01-06
+## [v1.2.0] - 2026-01-06
+### Added
+- **Interactive Inspection Suit**: Combining multi-level zoom (up to 4x) with a new **Pan-to-Zoom** mouse-tracking system for high-detail receipt review.
+- **Smart Sheet Streamlining**: Automated removal of unused columns in Google Sheets for a cleaner database view.
+- **Authentication Resilience**: Explicit detection and recovery for expired Google sign-in sessions.
+- **Keyboard Accessibility**: You can now press **Enter** in the Sheet Selector modal to quickly confirm your export.
+
+## [v1.1.5] - 2026-01-06
 ### Added
 - **Pan-to-Zoom**: When zoomed in, the image now follows your mouse movements, allowing you to easily pan and inspect every corner of the receipt without extra controls.
 
-## [1.1.4] - 2026-01-06
+## [v1.1.4] - 2026-01-06
 ### Changed
 - **Enhanced Multi-Level Zoom**: Added a 4x zoom level. Clicking now cycles through 1x → 2x → 3x → 4x → 1x.
 - **Improved Cursor Feedback**: The zoom cursor now correctly displays a "+" sign until the final 4x magnification, and switching to a "-" sign only when the next click will zoom back out.
 
-## [1.1.3] - 2026-01-06
+## [v1.1.3] - 2026-01-06
 ### Added
 - **Multi-Level Zoom**: Clicking images in the preview modal now cycles through multiple zoom levels (1x → 2x → 3x) for even better data visibility.
 
-## [1.1.2] - 2026-01-06
+## [v1.1.2] - 2026-01-06
 ### Changed
 - **Sheets Streamlining**: New or empty sheets are now automatically trimmed to exactly 4 columns, removing unused extra columns for a cleaner spreadsheet.
 - **UI Refinement**: Simplified the main title rebranding in the header.
 
-## [1.1.1] - 2026-01-06
+## [v1.1.1] - 2026-01-06
 ### Fixed
 - **Authentication Resilience**: Added explicit handling for `401 Unauthorized` errors. If your session expires, the app will now automatically clear the expired token and prompt you to sign in again.
 - **Cache Busting**: Version bumped to `v1.1.1` to force browsers to load the latest logic.
 
-## [1.1.0] - 2026-01-05
+## [v1.1.0] - 2026-01-05
 ### Changed
 - **Rebranding**: Renamed the application to **"Receipt Scanner"** (removed "AI" from the name).
 - **Enhanced Export**: Exports to new/empty Google Sheets now automatically include bold headers, a frozen first row, and basic filters.
