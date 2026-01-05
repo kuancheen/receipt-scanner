@@ -8,6 +8,11 @@ const config = {};
 let tokenClient;
 let accessToken = null;
 
+// Application State
+let processingQueue = [];
+let processedResults = [];
+let isProcessing = false;
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     loadConfig();
@@ -108,7 +113,7 @@ function setupEventListeners() {
     dropZone.addEventListener('click', () => fileInput.click());
 
     fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) handleFile(e.target.files[0]);
+        if (e.target.files.length > 0) handleFiles(Array.from(e.target.files));
     });
 
     document.getElementById('clear-config').addEventListener('click', clearConfig);
@@ -123,30 +128,38 @@ function setupEventListeners() {
     dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
         dropZone.classList.remove('active');
-        if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+        if (e.dataTransfer.files.length > 0) handleFiles(Array.from(e.dataTransfer.files));
     });
 
-    document.getElementById('scan-btn').addEventListener('click', summarizeReceipt);
+    document.getElementById('scan-btn').addEventListener('click', startBatchProcessing);
+    document.getElementById('copy-btn').addEventListener('click', copyToClipboard);
     document.getElementById('export-btn').addEventListener('click', exportToSheet);
 
     document.getElementById('sign-in-btn').addEventListener('click', handleSignIn);
     document.getElementById('sign-out-btn').addEventListener('click', handleSignOut);
 }
 
-function handleFile(file) {
-    if (!file.type.startsWith('image/')) {
-        showMessage('Please upload an image file (PNG, JPG).', 'error', 'scan-status');
+function handleFiles(files) {
+    const validFiles = files.filter(file => file.type.startsWith('image/'));
+
+    if (validFiles.length === 0) {
+        showMessage('Please upload image files (PNG, JPG).', 'error', 'scan-status');
         return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const preview = document.getElementById('image-preview');
-        preview.src = e.target.result;
-        document.getElementById('preview-container').classList.remove('hidden');
-        document.getElementById('drop-zone').classList.add('hidden');
-    };
-    reader.readAsDataURL(file);
+    processingQueue = validFiles.map(file => ({
+        file,
+        status: 'pending',
+        result: null
+    }));
+
+    processedResults = [];
+    renderResultsTable();
+
+    document.getElementById('preview-container').classList.remove('hidden');
+    document.getElementById('drop-zone').classList.add('hidden');
+
+    showMessage(`${validFiles.length} file(s) ready for analysis.`, 'info', 'scan-status');
 }
 
 // Google Auth Logic
@@ -208,80 +221,130 @@ function updateAuthState(isSignedIn) {
 }
 
 // Gemini API Logic
-async function summarizeReceipt() {
+// Gemini API Logic
+async function startBatchProcessing() {
+    if (isProcessing) return;
+
     const apiKey = config['gemini-api-key'];
     if (!apiKey) {
         showMessage('Please enter your Gemini API Key in the Configuration section.', 'error', 'scan-status');
         return;
     }
 
-    const preview = document.getElementById('image-preview');
-    if (!preview.src) return;
+    if (processingQueue.length === 0) {
+        showMessage('No files selected for processing.', 'info', 'scan-status');
+        return;
+    }
 
+    isProcessing = true;
     toggleLoading(true);
     document.getElementById('results-section').classList.remove('hidden');
 
     try {
-        const base64Data = preview.src.split(',')[1];
-        const mimeType = preview.src.split(';')[0].split(':')[1];
+        for (let i = 0; i < processingQueue.length; i++) {
+            const item = processingQueue[i];
+            item.status = 'processing';
+            renderResultsTable();
 
-        const prompt = `Analyze this receipt. Extract and summarize the purchase into a JSON format with these exact keys:
+            try {
+                const result = await summarizeReceipt(item.file, apiKey);
+                item.status = 'completed';
+                item.result = result;
+                processedResults.push(result);
+            } catch (err) {
+                console.error(`Error processing file ${i}:`, err);
+                item.status = 'error';
+                item.error = err.message;
+            }
+            renderResultsTable();
+        }
+        showMessage('Processing complete!', 'success', 'scan-status');
+    } finally {
+        isProcessing = false;
+        toggleLoading(false);
+    }
+}
+
+async function summarizeReceipt(file, apiKey) {
+    const base64Data = await fileToBase64(file);
+    const mimeType = file.type;
+
+    const prompt = `Analyze this receipt. Extract and summarize the purchase into a JSON format with these exact keys:
 "date": "Date of purchase (YYYY-MM-DD)",
+"company": "The name of the company or seller that issued the receipt",
 "details": "A concise summary of what was purchased, highlighting one or two notable items as examples",
 "amount": "The total amount paid as a number (without currency symbols)"
 
 Ensure the response is ONLY the JSON object.`;
 
-        const response = await fetch(`${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [
-                        { text: prompt },
-                        { inline_data: { mime_type: mimeType, data: base64Data } }
-                    ]
-                }]
-            })
-        });
+    const response = await fetch(`${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            contents: [{
+                parts: [
+                    { text: prompt },
+                    { inline_data: { mime_type: mimeType, data: base64Data } }
+                ]
+            }]
+        })
+    });
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if (data.error) {
-            throw new Error(data.error.message || 'Gemini API Error');
-        }
-
-        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-            throw new Error('No analysis results returned from AI.');
-        }
-
-        const textResponse = data.candidates[0].content.parts[0].text;
-
-        // Basic JSON parsing from AI response
-        const jsonMatch = textResponse.match(/\{.*\}/s);
-        if (!jsonMatch) throw new Error('Failed to parse AI response');
-
-        const result = JSON.parse(jsonMatch[0]);
-
-        document.getElementById('res-date').value = result.date || '';
-        document.getElementById('res-details').value = result.details || '';
-        document.getElementById('res-amount').value = result.amount || '';
-
-    } catch (error) {
-        console.error('Scan Error:', error);
-        const errorMessage = error.message || '';
-        const msg = errorMessage.includes('API key not valid')
-            ? 'Invalid Gemini API Key. Please check your configuration.'
-            : 'Failed to analyze receipt: ' + errorMessage;
-        showMessage(msg, 'error', 'scan-status');
-    } finally {
-        toggleLoading(false);
+    if (data.error) {
+        throw new Error(data.error.message || 'Gemini API Error');
     }
+
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+        throw new Error('No analysis results returned from AI.');
+    }
+
+    const textResponse = data.candidates[0].content.parts[0].text;
+    const jsonMatch = textResponse.match(/\{.*\}/s);
+    if (!jsonMatch) throw new Error('Failed to parse AI response');
+
+    return JSON.parse(jsonMatch[0]);
+}
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function renderResultsTable() {
+    const body = document.getElementById('results-body');
+    body.innerHTML = '';
+
+    processingQueue.forEach((item, index) => {
+        const tr = document.createElement('tr');
+
+        if (item.status === 'completed' && item.result) {
+            tr.innerHTML = `
+                <td>${item.result.date || 'N/A'}</td>
+                <td>${item.result.company || 'N/A'}</td>
+                <td>${item.result.details || 'N/A'}</td>
+                <td>${item.result.amount || 'N/A'}</td>
+            `;
+        } else {
+            const statusText = item.status === 'processing' ? '⏳ Analyzing...' :
+                item.status === 'error' ? `❌ Error: ${item.error}` : '🕒 Pending';
+            tr.innerHTML = `
+                <td colspan="4" style="text-align: center; color: var(--text-dim); font-style: italic;">
+                    ${item.file.name}: ${statusText}
+                </td>
+            `;
+        }
+        body.appendChild(tr);
+    });
 }
 
 function toggleLoading(isLoading) {
     document.getElementById('loading-indicator').classList.toggle('hidden', !isLoading);
-    document.getElementById('analysis-results').classList.toggle('hidden', isLoading);
     document.getElementById('scan-btn').disabled = isLoading;
 }
 
@@ -298,11 +361,17 @@ async function exportToSheet() {
         return;
     }
 
-    const row = [
-        document.getElementById('res-date').value,
-        document.getElementById('res-details').value,
-        document.getElementById('res-amount').value
-    ];
+    if (processedResults.length === 0) {
+        showMessage('No results to export.', 'info', 'export-status');
+        return;
+    }
+
+    const rows = processedResults.map(res => [
+        res.date || '',
+        res.company || '',
+        res.details || '',
+        res.amount || ''
+    ]);
 
     try {
         const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A1:append?valueInputOption=USER_ENTERED`, {
@@ -312,12 +381,12 @@ async function exportToSheet() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                values: [row]
+                values: rows
             })
         });
 
         if (response.ok) {
-            showMessage('Transfer successful! Check your Google Sheet.', 'success', 'export-status');
+            showMessage(`Success! ${rows.length} row(s) added to Google Sheet.`, 'success', 'export-status');
         } else {
             const err = await response.json();
             throw new Error(err.error.message);
@@ -326,6 +395,24 @@ async function exportToSheet() {
         console.error('Export Error:', error);
         showMessage('Failed to export to Google Sheets: ' + error.message, 'error', 'export-status');
     }
+}
+
+function copyToClipboard() {
+    if (processedResults.length === 0) {
+        showMessage('No results to copy.', 'info', 'export-status');
+        return;
+    }
+
+    const text = processedResults.map(res =>
+        `Date: ${res.date || 'N/A'}\nCompany: ${res.company || 'N/A'}\nDetails: ${res.details || 'N/A'}\nAmount: ${res.amount || 'N/A'}\n---`
+    ).join('\n');
+
+    navigator.clipboard.writeText(text).then(() => {
+        showMessage('Copied to clipboard!', 'success', 'export-status');
+    }).catch(err => {
+        console.error('Clipboard Error:', err);
+        showMessage('Failed to copy to clipboard.', 'error', 'export-status');
+    });
 }
 
 function showMessage(text, type = 'info', targetId = null) {

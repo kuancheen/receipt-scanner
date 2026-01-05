@@ -1,7 +1,15 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v0.2.6-blue)
+![Version](https://img.shields.io/badge/version-v0.3.0-blue)
 All notable changes to this project will be documented in this file.
+
+## [0.3.0] - 2026-01-05
+### Added
+- **Batch Processing**: Support for uploading multiple receipts at once.
+- **Table View**: Dynamic results table displaying Date, Company, Summary, and Amount.
+- **New Field**: AI now extracts the "Company/Seller" name from receipts.
+- **Bulk Export**: Export all processed results to Google Sheets in a single click.
+- **Copy to Clipboard**: Added feature to copy summary results to the clipboard.
 
 ## [0.2.6] - 2026-01-05
 ### Changed

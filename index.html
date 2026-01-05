@@ -73,7 +73,7 @@
                     <div class="drop-zone-content">
                         <span class="upload-icon">📸</span>
                         <p>Click or Drag receipt image here</p>
-                        <input type="file" id="file-input" accept="image/*" capture="environment" hidden>
+                        <input type="file" id="file-input" accept="image/*" capture="environment" hidden multiple>
                     </div>
                 </div>
                 <div id="preview-container" class="hidden">
@@ -90,19 +90,25 @@
                     <p>AI is analyzing your receipt...</p>
                 </div>
                 <div id="analysis-results" class="results-content">
-                    <div class="result-item">
-                        <label>Date of Purchase</label>
-                        <input type="text" id="res-date">
+                    <div class="table-container">
+                        <table id="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Company</th>
+                                    <th>Summary & Highlights</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-body">
+                                <!-- Results will be appended here -->
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="result-item">
-                        <label>Summary & Highlights</label>
-                        <textarea id="res-details" rows="3"></textarea>
+                    <div class="result-actions">
+                        <button id="copy-btn" class="btn outline">Copy to Clipboard</button>
+                        <button id="export-btn" class="btn success">Export to Google Sheet</button>
                     </div>
-                    <div class="result-item">
-                        <label>Total Amount</label>
-                        <input type="text" id="res-amount">
-                    </div>
-                    <button id="export-btn" class="btn success">Export to Google Sheet</button>
                     <div id="export-status" class="status-box hidden"></div>
                 </div>
             </section>
@@ -110,7 +116,7 @@
 
         <footer>
             <p>
-                v0.2.6 |
+                v0.3.0 |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/README.md"
                     target="_blank">README</a> |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/CHANGELOG.md"
@@ -122,7 +128,7 @@
             </p>
         </footer>
     </div>
-    <script src="app.js?v=0.2.6"></script>
+    <script src="app.js?v=0.3.0"></script>
     <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 </body>
 
