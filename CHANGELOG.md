@@ -1,7 +1,13 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.2.0-blue)
+![Version](https://img.shields.io/badge/version-v1.3.0-blue)
 All notable changes to this project will be documented in this file.
+
+## [v1.3.0] - 2026-01-06
+### Added
+- **PDF Scanning Support**: You can now upload PDF receipts in addition to images.
+- **PDF Previews**: Automatically generates a high-quality preview of the first page of any uploaded PDF for inspection in the modal viewer.
+- **Improved File Handling**: Unified processing queue for images and PDFs.
 
 ## [v1.2.0] - 2026-01-06
 ### Added

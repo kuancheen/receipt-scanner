@@ -1,3 +1,8 @@
+// PDF.js setup
+if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
 // Configuration management
 const CONFIG_KEYS = ['gemini-api-key', 'oauth-client-id', 'spreadsheet-id'];
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
@@ -148,19 +153,30 @@ function setupEventListeners() {
 }
 
 async function handleFiles(files) {
-    const validFiles = files.filter(file => file.type.startsWith('image/'));
+    const validFiles = files.filter(file => file.type.startsWith('image/') || file.type === 'application/pdf');
 
     if (validFiles.length === 0) {
-        showMessage('Please upload image files (PNG, JPG).', 'error', 'scan-status');
+        showMessage('Please upload image files (PNG, JPG) or PDF documents.', 'error', 'scan-status');
         return;
     }
 
-    // Prepare queue and load base64 for preview
+    // Prepare queue and load preview URLs
     processingQueue = await Promise.all(validFiles.map(async (file) => {
-        const base64 = await fileToBase64Full(file);
+        let previewUrl;
+        if (file.type === 'application/pdf') {
+            try {
+                previewUrl = await pdfToImageBase64(file);
+            } catch (e) {
+                console.error('PDF preview error:', e);
+                // Fallback icon
+                previewUrl = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23333%22/><text x=%2250%%22 y=%2250%%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22>PDF Document</text></svg>';
+            }
+        } else {
+            previewUrl = await fileToBase64Full(file);
+        }
         return {
             file,
-            base64,
+            previewUrl,
             status: 'pending',
             result: null
         };
@@ -184,7 +200,22 @@ async function handleFiles(files) {
     document.getElementById('preview-container').classList.remove('hidden');
     document.getElementById('drop-zone').classList.add('hidden');
 
-    showMessage(`${validFiles.length} file(s) ready for analysis.`, 'info', 'scan-status');
+    const typeMsg = validFiles.some(f => f.type === 'application/pdf') ? 'Images and PDFs' : 'Files';
+    showMessage(`${validFiles.length} ${typeMsg} ready for analysis.`, 'info', 'scan-status');
+}
+
+async function pdfToImageBase64(file) {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const page = await pdf.getPage(1);
+    const viewport = page.getViewport({ scale: 2.0 });
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    await page.render({ canvasContext: context, viewport: viewport }).promise;
+    return canvas.toDataURL('image/png');
 }
 
 function fileToBase64Full(file) {
@@ -734,7 +765,7 @@ function updateModalImage(root) {
     const next = root.getElementById('next-img');
     const indexText = root.getElementById('modal-image-index');
 
-    img.src = item.base64;
+    img.src = item.previewUrl;
     indexText.textContent = `Receipt ${currentModalImageIndex + 1} of ${processingQueue.length} (${item.file.name})`;
 
     prev.disabled = currentModalImageIndex === 0;

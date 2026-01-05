@@ -15,6 +15,8 @@
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧾</text></svg>">
     <link rel="stylesheet" href="app.css?v=0.2.6">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- PDF.js for previewing PDF files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 
 <body class="dark-theme">
@@ -74,8 +76,9 @@
                 <div class="drop-zone" id="drop-zone">
                     <div class="drop-zone-content">
                         <span class="upload-icon">📸</span>
-                        <p>Click or Drag receipt image here</p>
-                        <input type="file" id="file-input" accept="image/*" capture="environment" hidden multiple>
+                        <p>Click or Drag receipt image or PDF here</p>
+                        <input type="file" id="file-input" accept="image/*,application/pdf" capture="environment" hidden
+                            multiple>
                     </div>
                 </div>
                 <div id="preview-container" class="hidden">
@@ -121,7 +124,7 @@
 
         <footer>
             <p>
-                v1.2.0 |
+                v1.3.0 |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/README.md"
                     target="_blank">README</a> |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/CHANGELOG.md"
@@ -133,7 +136,7 @@
             </p>
         </footer>
     </div>
-    <script src="app.js?v=1.2.0"></script>
+    <script src="app.js?v=1.3.0"></script>
     <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 
     <!-- Global Modal System -->
