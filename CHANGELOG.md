@@ -1,7 +1,12 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v0.2.5-blue)
+![Version](https://img.shields.io/badge/version-v0.2.6-blue)
 All notable changes to this project will be documented in this file.
+
+## [0.2.6] - 2026-01-05
+### Changed
+- Updated the AI model to `gemini-2.0-flash` for faster and more accurate receipt processing.
+- Refactored API handling to use centralized constants for base URL and model name.
 
 ## [0.2.5] - 2026-01-05
 ### Fixed
