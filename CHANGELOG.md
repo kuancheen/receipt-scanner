@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2026-01-05
+### Fixed
+- Fixed critical syntax error in `app.js` caused by incorrect backslash escapes.
+- Resolved OAuth initialization race condition to ensure the sign-in button works reliably.
+
 ## [0.1.0] - 2026-01-05
 ### Added
 - Initial release of Receipt Scanner AI.
