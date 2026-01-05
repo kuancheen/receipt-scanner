@@ -415,6 +415,12 @@ async function exportToSheet() {
             headers: { 'Authorization': `Bearer ${accessToken}` }
         });
 
+        if (response.status === 401) {
+            accessToken = null;
+            updateAuthState(false);
+            throw new Error('Sign-in session expired. Please sign in again.');
+        }
+
         if (!response.ok) throw new Error('Failed to fetch spreadsheet metadata.');
         const data = await response.json();
         const sheets = data.sheets.map(s => s.properties.title);
@@ -487,6 +493,13 @@ async function createNewSheet(title) {
             requests: [{ addSheet: { properties: { title } } }]
         })
     });
+
+    if (response.status === 401) {
+        accessToken = null;
+        updateAuthState(false);
+        throw new Error('Sign-in session expired. Please sign in again.');
+    }
+
     if (!response.ok) {
         const err = await response.json();
         throw new Error(err.error.message);
@@ -500,6 +513,13 @@ async function performAppend(sheetName) {
     const checkResponse = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/'${sheetName}'!A1:A2`, {
         headers: { 'Authorization': `Bearer ${accessToken}` }
     });
+
+    if (checkResponse.status === 401) {
+        accessToken = null;
+        updateAuthState(false);
+        throw new Error('Sign-in session expired. Please sign in again.');
+    }
+
     const checkData = await checkResponse.json();
     const needsHeader = !checkData.values || checkData.values.length === 0;
 
@@ -522,6 +542,13 @@ async function performAppend(sheetName) {
         const sheetMetadata = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`, {
             headers: { 'Authorization': `Bearer ${accessToken}` }
         });
+
+        if (sheetMetadata.status === 401) {
+            accessToken = null;
+            updateAuthState(false);
+            throw new Error('Sign-in session expired. Please sign in again.');
+        }
+
         const meta = await sheetMetadata.json();
         const sheetId = meta.sheets.find(s => s.properties.title === sheetName).properties.sheetId;
 
@@ -571,6 +598,12 @@ async function performAppend(sheetName) {
         },
         body: JSON.stringify({ values: rows })
     });
+
+    if (response.status === 401) {
+        accessToken = null;
+        updateAuthState(false);
+        throw new Error('Sign-in session expired. Please sign in again.');
+    }
 
     if (!response.ok) {
         const err = await response.json();

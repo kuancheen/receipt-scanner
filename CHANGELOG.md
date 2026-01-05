@@ -1,7 +1,12 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.1.0-blue)
+![Version](https://img.shields.io/badge/version-v1.1.1-blue)
 All notable changes to this project will be documented in this file.
+
+## [1.1.1] - 2026-01-06
+### Fixed
+- **Authentication Resilience**: Added explicit handling for `401 Unauthorized` errors. If your session expires, the app will now automatically clear the expired token and prompt you to sign in again.
+- **Cache Busting**: Version bumped to `v1.1.1` to force browsers to load the latest logic.
 
 ## [1.1.0] - 2026-01-05
 ### Changed
