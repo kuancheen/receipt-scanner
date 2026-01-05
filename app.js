@@ -30,6 +30,19 @@ function loadConfig() {
 }
 
 function saveConfig() {
+    const geminiKey = document.getElementById('gemini-api-key').value.trim();
+    const oauthId = document.getElementById('oauth-client-id').value.trim();
+
+    // Basic validation
+    if (geminiKey.includes('.apps.googleusercontent.com')) {
+        showMessage('Error: It looks like you pasted an OAuth Client ID into the Gemini API Key field.', 'error', 'config-status');
+        return;
+    }
+    if (oauthId.startsWith('AIzaSy')) {
+        showMessage('Error: It looks like you pasted a Gemini API Key into the OAuth Client ID field.', 'error', 'config-status');
+        return;
+    }
+
     CONFIG_KEYS.forEach(key => {
         const val = document.getElementById(key).value.trim();
         config[key] = val;
