@@ -131,6 +131,7 @@ function setupEventListeners() {
         if (e.dataTransfer.files.length > 0) handleFiles(Array.from(e.dataTransfer.files));
     });
 
+    document.getElementById('reset-btn').addEventListener('click', resetScan);
     document.getElementById('scan-btn').addEventListener('click', startBatchProcessing);
     document.getElementById('copy-btn').addEventListener('click', copyToClipboard);
     document.getElementById('export-btn').addEventListener('click', exportToSheet);
@@ -154,6 +155,17 @@ function handleFiles(files) {
     }));
 
     processedResults = [];
+
+    // Render file list
+    const fileList = document.getElementById('file-list-preview');
+    fileList.innerHTML = '';
+    validFiles.forEach(file => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.textContent = file.name;
+        fileList.appendChild(item);
+    });
+
     renderResultsTable();
 
     document.getElementById('preview-container').classList.remove('hidden');
@@ -239,6 +251,13 @@ async function startBatchProcessing() {
     isProcessing = true;
     toggleLoading(true);
     document.getElementById('results-section').classList.remove('hidden');
+
+    processedResults = []; // Clear previous results
+    processingQueue.forEach(item => {
+        item.status = 'pending';
+        item.result = null;
+    });
+    renderResultsTable();
 
     try {
         for (let i = 0; i < processingQueue.length; i++) {
@@ -427,4 +446,16 @@ function showMessage(text, type = 'info', targetId = null) {
     window[timeoutKey] = setTimeout(() => {
         msgBox.classList.add('hidden');
     }, 5000);
+}
+function resetScan() {
+    processingQueue = [];
+    processedResults = [];
+    isProcessing = false;
+
+    document.getElementById('file-list-preview').innerHTML = '';
+    document.getElementById('results-body').innerHTML = '';
+    document.getElementById('preview-container').classList.add('hidden');
+    document.getElementById('results-section').classList.add('hidden');
+    document.getElementById('drop-zone').classList.remove('hidden');
+    document.getElementById('file-input').value = ''; // Clear file input
 }

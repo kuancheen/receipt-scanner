@@ -77,8 +77,11 @@
                     </div>
                 </div>
                 <div id="preview-container" class="hidden">
-                    <img id="image-preview" src="" alt="Receipt Preview">
-                    <button id="scan-btn" class="btn primary">Summarize with AI</button>
+                    <div id="file-list-preview" class="file-list"></div>
+                    <div class="preview-actions">
+                        <button id="reset-btn" class="btn outline">Start Over</button>
+                        <button id="scan-btn" class="btn primary">Summarize all with AI</button>
+                    </div>
                     <div id="scan-status" class="status-box hidden"></div>
                 </div>
             </section>
@@ -116,7 +119,7 @@
 
         <footer>
             <p>
-                v0.3.0 |
+                v0.3.1 |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/README.md"
                     target="_blank">README</a> |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/CHANGELOG.md"
@@ -128,7 +131,7 @@
             </p>
         </footer>
     </div>
-    <script src="app.js?v=0.3.0"></script>
+    <script src="app.js?v=0.3.1"></script>
     <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 </body>
 

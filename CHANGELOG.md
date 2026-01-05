@@ -1,7 +1,12 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v0.3.0-blue)
+![Version](https://img.shields.io/badge/version-v0.3.1-blue)
 All notable changes to this project will be documented in this file.
+
+## [0.3.1] - 2026-01-05
+### Fixed
+- **Batch Preview**: Replaced the broken single-image preview with a dynamic file list that shows the names of all uploaded receipts.
+- **Workflow Reset**: Added a "Start Over" button to allow users to clear the current queue and upload new images without refreshing the page.
 
 ## [0.3.0] - 2026-01-05
 ### Added
