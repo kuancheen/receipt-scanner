@@ -1,6 +1,11 @@
 # Changelog
 
+![Version](https://img.shields.io/badge/version-v0.1.2-blue)
 All notable changes to this project will be documented in this file.
+
+## [0.1.2] - 2026-01-05
+### Fixed
+- Fixed `ReferenceError: gisLoaded is not defined` by ensuring `app.js` is loaded before the Google Identity Services script.
 
 ## [0.1.1] - 2026-01-05
 ### Fixed
