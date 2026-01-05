@@ -1,7 +1,11 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.1.2-blue)
+![Version](https://img.shields.io/badge/version-v1.1.3-blue)
 All notable changes to this project will be documented in this file.
+
+## [1.1.3] - 2026-01-06
+### Added
+- **Multi-Level Zoom**: Clicking images in the preview modal now cycles through multiple zoom levels (1x → 2x → 3x) for even better data visibility.
 
 ## [1.1.2] - 2026-01-06
 ### Changed

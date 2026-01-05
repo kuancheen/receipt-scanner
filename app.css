@@ -590,7 +590,8 @@ footer {
     cursor: zoom-in;
 }
 
-.image-display.zoomed {
+.image-display.zoom-2,
+.image-display.zoom-3 {
     cursor: zoom-out;
 }
 
@@ -602,8 +603,12 @@ footer {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.image-display.zoomed img {
+.image-display.zoom-2 img {
     transform: scale(2);
+}
+
+.image-display.zoom-3 img {
+    transform: scale(3);
 }
 
 .image-index {

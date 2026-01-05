@@ -671,7 +671,16 @@ function openImageModal(index) {
 
     // Zoom toggle
     const display = content.querySelector('.image-display');
-    display.onclick = () => display.classList.toggle('zoomed');
+    display.onclick = () => {
+        if (display.classList.contains('zoom-2')) {
+            display.classList.remove('zoom-2');
+            display.classList.add('zoom-3');
+        } else if (display.classList.contains('zoom-3')) {
+            display.classList.remove('zoom-3');
+        } else {
+            display.classList.add('zoom-2');
+        }
+    };
 
     // Wire up paging
     content.querySelector('#prev-img').onclick = () => {
