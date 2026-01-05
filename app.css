@@ -588,10 +588,15 @@ footer {
     overflow: hidden;
     position: relative;
     cursor: zoom-in;
+    /* Default cursor for non-zoomed or lower zoom levels */
 }
 
 .image-display.zoom-2,
 .image-display.zoom-3 {
+    cursor: zoom-in;
+}
+
+.image-display.zoom-4 {
     cursor: zoom-out;
 }
 
@@ -609,6 +614,10 @@ footer {
 
 .image-display.zoom-3 img {
     transform: scale(3);
+}
+
+.image-display.zoom-4 img {
+    transform: scale(4);
 }
 
 .image-index {

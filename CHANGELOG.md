@@ -1,7 +1,12 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.1.3-blue)
+![Version](https://img.shields.io/badge/version-v1.1.4-blue)
 All notable changes to this project will be documented in this file.
+
+## [1.1.4] - 2026-01-06
+### Changed
+- **Enhanced Multi-Level Zoom**: Added a 4x zoom level. Clicking now cycles through 1x → 2x → 3x → 4x → 1x.
+- **Improved Cursor Feedback**: The zoom cursor now correctly displays a "+" sign until the final 4x magnification, and switching to a "-" sign only when the next click will zoom back out.
 
 ## [1.1.3] - 2026-01-06
 ### Added

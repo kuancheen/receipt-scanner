@@ -677,6 +677,9 @@ function openImageModal(index) {
             display.classList.add('zoom-3');
         } else if (display.classList.contains('zoom-3')) {
             display.classList.remove('zoom-3');
+            display.classList.add('zoom-4');
+        } else if (display.classList.contains('zoom-4')) {
+            display.classList.remove('zoom-4');
         } else {
             display.classList.add('zoom-2');
         }
