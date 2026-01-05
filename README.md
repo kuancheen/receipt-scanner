@@ -1,22 +1,22 @@
 # 🧾 Receipt Scanner AI
 
-![Version](https://img.shields.io/badge/version-v0.2.6-blue)
+![Version](https://img.shields.io/badge/version-v0.3.0-blue)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Semantic Versioning](https://img.shields.io/badge/semver-2.0.0-blue)
 ![Views](https://hits.sh/kuancheen.github.io/receipt-scanner.svg?view=today-total&style=flat&label=👁️%20Views&extraCount=0&color=6366f1)
 ![Status](https://img.shields.io/badge/status-active-success)
 [![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://kuancheen.github.io/receipt-scanner)
 
-> You can view the live demo by clicking the badge above or by [visiting this link](https://kuancheen.github.io/receipt-scanner).
-
-An intelligent web application to scan, summarize, and export receipts to Google Sheets using Gemini AI.
+> AI-powered receipt scanner that summarizes your purchases and exports them to Google Sheets. Now with batch processing!
 
 ## ✨ Features
-- **AI-Powered OCR**: Uses Gemini 1.5 Flash to extract text and summarize purchases.
-- **Smart Summarization**: Automatically identifies the date, total amount, and provides a concise summary of items.
-- **Direct Export**: Securely appends data to a specified Google Sheet via OAuth.
-- **Premium UI**: Modern dark-mode design with glassmorphism and smooth animations.
-- **Privacy First**: API keys and OAuth configurations are stored locally in your browser.
+- 📸 **Batch Processing**: Upload and analyze multiple receipts at once.
+- 🤖 **Gemini 2.0 Flash**: State-of-the-art AI for accurate extraction.
+- 📊 **Table View**: Review all results in a clean, interactive table.
+- 🏢 **Company Extraction**: Automatically identifies the seller/merchant.
+- 📝 **Bulk Export**: Send all summarized data to Google Sheets instantly.
+- 📋 **Copy to Clipboard**: Quickly copy results for use in other apps.
+- 🔒 **Privacy First**: Client-side processing (API keys stored locally).
 
 ## 🚀 Quick Start
 
