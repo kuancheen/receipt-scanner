@@ -244,21 +244,34 @@ Ensure the response is ONLY the JSON object.`;
         });
 
         const data = await response.json();
+
+        if (data.error) {
+            throw new Error(data.error.message || 'Gemini API Error');
+        }
+
+        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+            throw new Error('No analysis results returned from AI.');
+        }
+
         const textResponse = data.candidates[0].content.parts[0].text;
 
         // Basic JSON parsing from AI response
-        const jsonMatch = textResponse.match(/\\{.*\\}/s);
+        const jsonMatch = textResponse.match(/\{.*\}/s);
         if (!jsonMatch) throw new Error('Failed to parse AI response');
 
         const result = JSON.parse(jsonMatch[0]);
 
-        document.getElementById('res-date').value = result.date;
-        document.getElementById('res-details').value = result.details;
-        document.getElementById('res-amount').value = result.amount;
+        document.getElementById('res-date').value = result.date || '';
+        document.getElementById('res-details').value = result.details || '';
+        document.getElementById('res-amount').value = result.amount || '';
 
     } catch (error) {
         console.error('Scan Error:', error);
-        showMessage('Failed to analyze receipt. Check your API key or image quality.', 'error', 'scan-status');
+        const errorMessage = error.message || '';
+        const msg = errorMessage.includes('API key not valid')
+            ? 'Invalid Gemini API Key. Please check your configuration.'
+            : 'Failed to analyze receipt: ' + errorMessage;
+        showMessage(msg, 'error', 'scan-status');
     } finally {
         toggleLoading(false);
     }
