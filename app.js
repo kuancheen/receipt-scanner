@@ -48,8 +48,8 @@ function clearConfig() {
         btn.classList.add('confirming');
 
         // Timeout to revert button
-        if (window.clearTimeout) clearTimeout(window.clearTimeout);
-        window.clearTimeout = setTimeout(() => {
+        if (window.configClearTimeout) clearTimeout(window.configClearTimeout);
+        window.configClearTimeout = setTimeout(() => {
             btn.textContent = btn.dataset.originalText;
             btn.classList.remove('confirming');
             delete btn.dataset.confirming;
@@ -67,7 +67,7 @@ function clearConfig() {
     btn.textContent = btn.dataset.originalText;
     btn.classList.remove('confirming');
     delete btn.dataset.confirming;
-    if (window.clearTimeout) clearTimeout(window.clearTimeout);
+    if (window.configClearTimeout) clearTimeout(window.configClearTimeout);
 
     showMessage('Configuration cleared', 'info', 'config-status');
     initGoogleAuth();

@@ -1,7 +1,11 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v0.2.1-blue)
+![Version](https://img.shields.io/badge/version-v0.2.2-blue)
 All notable changes to this project will be documented in this file.
+
+## [0.2.2] - 2026-01-05
+### Fixed
+- Fixed `TypeError: clearTimeout is not a function` by resolving a variable shadowing conflict in `app.js`.
 
 ## [0.2.1] - 2026-01-05
 ### Refined
