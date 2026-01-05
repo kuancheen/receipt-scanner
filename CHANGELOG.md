@@ -1,7 +1,12 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.1.1-blue)
+![Version](https://img.shields.io/badge/version-v1.1.2-blue)
 All notable changes to this project will be documented in this file.
+
+## [1.1.2] - 2026-01-06
+### Changed
+- **Sheets Streamlining**: New or empty sheets are now automatically trimmed to exactly 4 columns, removing unused extra columns for a cleaner spreadsheet.
+- **UI Refinement**: Simplified the main title rebranding in the header.
 
 ## [1.1.1] - 2026-01-06
 ### Fixed

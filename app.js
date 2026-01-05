@@ -569,8 +569,8 @@ async function performAppend(sheetName) {
                     },
                     {
                         updateSheetProperties: {
-                            properties: { sheetId: sheetId, gridProperties: { frozenRowCount: 1 } },
-                            fields: 'gridProperties.frozenRowCount'
+                            properties: { sheetId: sheetId, gridProperties: { frozenRowCount: 1, columnCount: 4 } },
+                            fields: 'gridProperties.frozenRowCount,gridProperties.columnCount'
                         }
                     },
                     {
