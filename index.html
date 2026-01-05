@@ -1,5 +1,5 @@
 <!--
-  Application: Receipt Scanner AI
+  Application: Receipt Scanner
   Description: Intelligent web application to scan, summarize, and export receipts to Google Sheets using Gemini AI.
   Author: kuancheen
   Copyright: 2026
@@ -10,7 +10,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receipt AI - Smart Scanner</title>
+    <title>Receipt Scanner | AI-Powered Expense Manager</title>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧾</text></svg>">
     <link rel="stylesheet" href="app.css?v=0.2.6">
@@ -22,7 +22,7 @@
         <header>
             <div class="logo">
                 <span class="icon">🧾</span>
-                <h1>Receipt Scanner AI</h1>
+                <h1><span>🧾</span> Receipt Scanner</h1>
             </div>
             <p class="tagline">Intelligent receipt summarization and Google Sheets export</p>
         </header>
@@ -43,7 +43,7 @@
                 <div class="input-group">
                     <label for="oauth-client-id">OAuth Client ID</label>
                     <div class="input-wrapper">
-                        <input type="text" id="oauth-client-id" placeholder="...apps.googleusercontent.com">
+                        <input type="password" id="oauth-client-id" placeholder="Enter your OAuth Client ID">
                         <button type="button" class="toggle-btn"
                             onclick="toggleVisibility('oauth-client-id', this)">👁️</button>
                     </div>
@@ -55,8 +55,8 @@
                     <input type="text" id="spreadsheet-id" placeholder="1abc123...">
                 </div>
                 <div class="config-actions">
-                    <button id="save-config" class="btn secondary">Save Configuration</button>
-                    <button id="clear-config" class="btn outline">Clear All</button>
+                    <button id="save-config" class="btn primary">💾 Save Configuration</button>
+                    <button id="clear-config" class="btn outline danger">🧹 Clear All</button>
                 </div>
                 <div id="config-status" class="status-box hidden"></div>
             </section>
@@ -64,9 +64,11 @@
             <section class="upload-section card">
                 <h2><span class="step-num">2</span> Scan Receipt</h2>
                 <div id="auth-container" class="auth-box">
-                    <p>Sign in to enable exporting to Google Sheets</p>
-                    <button id="sign-in-btn" class="btn primary">Sign in with Google</button>
-                    <button id="sign-out-btn" class="btn secondary hidden">Sign out</button>
+                    <div id="auth-section" class="auth-card">
+                        <p id="auth-hint">Sign in to enable exporting to Google Sheets</p>
+                        <button id="sign-in-btn" class="btn google-btn">Sign in with Google</button>
+                        <button id="sign-out-btn" class="btn outline hidden">Sign out from Google Sheets</button>
+                    </div>
                 </div>
 
                 <div class="drop-zone" id="drop-zone">
@@ -79,7 +81,7 @@
                 <div id="preview-container" class="hidden">
                     <div id="file-list-preview" class="file-list"></div>
                     <div class="preview-actions">
-                        <button id="reset-btn" class="btn outline">Start Over</button>
+                        <button id="reset-btn" class="btn outline">🔄 Start Over</button>
                         <button id="scan-btn" class="btn primary">Summarize all with AI</button>
                     </div>
                     <div id="scan-status" class="status-box hidden"></div>
@@ -109,7 +111,7 @@
                         </table>
                     </div>
                     <div class="result-actions">
-                        <button id="copy-btn" class="btn outline">Copy to Clipboard</button>
+                        <button id="copy-btn" class="btn outline">📋 Copy to Clipboard</button>
                         <button id="export-btn" class="btn success">Export to Google Sheet</button>
                     </div>
                     <div id="export-status" class="status-box hidden"></div>
@@ -119,7 +121,7 @@
 
         <footer>
             <p>
-                v1.0.0 |
+                v1.1.0 |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/README.md"
                     target="_blank">README</a> |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/CHANGELOG.md"
@@ -131,7 +133,7 @@
             </p>
         </footer>
     </div>
-    <script src="app.js?v=1.0.0"></script>
+    <script src="app.js?v=1.1.0"></script>
     <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 
     <!-- Global Modal System -->

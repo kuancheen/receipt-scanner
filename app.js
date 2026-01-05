@@ -252,6 +252,8 @@ function handleSignOut() {
 function updateAuthState(isSignedIn) {
     document.getElementById('sign-in-btn').classList.toggle('hidden', isSignedIn);
     document.getElementById('sign-out-btn').classList.toggle('hidden', !isSignedIn);
+    const hint = document.getElementById('auth-hint');
+    if (hint) hint.classList.toggle('hidden', isSignedIn);
 }
 
 // Gemini API Logic
@@ -493,6 +495,67 @@ async function createNewSheet(title) {
 
 async function performAppend(sheetName) {
     const spreadsheetId = config['spreadsheet-id'];
+
+    // 1. Check if sheet is empty
+    const checkResponse = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/'${sheetName}'!A1:A2`, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+    const checkData = await checkResponse.json();
+    const needsHeader = !checkData.values || checkData.values.length === 0;
+
+    if (needsHeader) {
+        // Prepare header row and formatting
+        const headers = ["Date", "Company", "Summary & Highlights", "Amount"];
+
+        // Add header
+        await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/'${sheetName}'!A1:append?valueInputOption=USER_ENTERED`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ values: [headers] })
+        });
+
+        // Apply formatting (Bold, Freeze, Filter)
+        // First get the sheet ID
+        const sheetMetadata = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`, {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+        const meta = await sheetMetadata.json();
+        const sheetId = meta.sheets.find(s => s.properties.title === sheetName).properties.sheetId;
+
+        await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                requests: [
+                    {
+                        repeatCell: {
+                            range: { sheetId: sheetId, startRowIndex: 0, endRowIndex: 1 },
+                            cell: { userEnteredFormat: { textFormat: { bold: true } } },
+                            fields: 'userEnteredFormat.textFormat.bold'
+                        }
+                    },
+                    {
+                        updateSheetProperties: {
+                            properties: { sheetId: sheetId, gridProperties: { frozenRowCount: 1 } },
+                            fields: 'gridProperties.frozenRowCount'
+                        }
+                    },
+                    {
+                        setBasicFilter: {
+                            filter: { range: { sheetId: sheetId, startRowIndex: 0, endRowIndex: 1 } }
+                        }
+                    }
+                ]
+            })
+        });
+    }
+
     const rows = processedResults.map(res => [
         res.date || '',
         res.company || '',
@@ -521,24 +584,16 @@ function copyToClipboard() {
         return;
     }
 
-    // CSV Format: Date, Company, Details, Amount
-    const header = "Date,Company,Summary & Highlights,Amount";
-    const escape = (val) => {
-        const str = String(val || '');
-        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-            return `"${str.replace(/"/g, '""')}"`;
-        }
-        return str;
-    };
-
+    // TSV Format: Date, Company, Details, Amount
+    const header = "Date\tCompany\tSummary & Highlights\tAmount";
     const rows = processedResults.map(res =>
-        [res.date, res.company, res.details, res.amount].map(escape).join(',')
+        [res.date, res.company, res.details, res.amount].join('\t')
     );
 
-    const csvContent = [header, ...rows].join('\n');
+    const tsvContent = [header, ...rows].join('\n');
 
-    navigator.clipboard.writeText(csvContent).then(() => {
-        showMessage('Copied as CSV table!', 'success', 'export-status');
+    navigator.clipboard.writeText(tsvContent).then(() => {
+        showMessage('Copied as TSV (Excel ready)!', 'success', 'export-status');
     }).catch(err => {
         console.error('Clipboard Error:', err);
         showMessage('Failed to copy to clipboard.', 'error', 'export-status');
@@ -580,6 +635,10 @@ function openImageModal(index) {
     const content = template.content.cloneNode(true);
 
     updateModalImage(content);
+
+    // Zoom toggle
+    const display = content.querySelector('.image-display');
+    display.onclick = () => display.classList.toggle('zoomed');
 
     // Wire up paging
     content.querySelector('#prev-img').onclick = () => {

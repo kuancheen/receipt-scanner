@@ -585,6 +585,13 @@ footer {
 
 .image-display {
     text-align: center;
+    overflow: hidden;
+    position: relative;
+    cursor: zoom-in;
+}
+
+.image-display.zoomed {
+    cursor: zoom-out;
 }
 
 .image-display img {
@@ -592,6 +599,11 @@ footer {
     max-height: 70vh;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.image-display.zoomed img {
+    transform: scale(2);
 }
 
 .image-index {

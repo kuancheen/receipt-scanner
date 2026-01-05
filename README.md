@@ -1,21 +1,21 @@
-# 🧾 Receipt Scanner AI
+# 🧾 Receipt Scanner
 
-![Version](https://img.shields.io/badge/version-v1.0.0-blue)
+![Version](https://img.shields.io/badge/version-v1.1.0-blue)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Semantic Versioning](https://img.shields.io/badge/semver-2.0.0-blue)
 ![Views](https://hits.sh/kuancheen.github.io/receipt-scanner.svg?view=today-total&style=flat&label=👁️%20Views&extraCount=0&color=6366f1)
 ![Status](https://img.shields.io/badge/status-active-success)
 [![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://kuancheen.github.io/receipt-scanner)
 
-> AI-powered receipt scanner that summarizes your purchases and exports them to Google Sheets. Now with batch processing!
+> Efficient receipt management with Gemini-powered scanning and smart Google Sheets export.
 
 ## ✨ Features
 - 📸 **Batch Processing**: Upload and analyze multiple receipts at once.
 - 🤖 **Gemini 2.0 Flash**: State-of-the-art AI for accurate extraction.
 - 📊 **Table View**: Review all results in a clean, interactive table.
-- 🏢 **Company Extraction**: Automatically identifies the seller/merchant.
-- 📝 **Bulk Export**: Send all summarized data to Google Sheets instantly.
-- 📋 **Copy to Clipboard**: Quickly copy results for use in other apps.
+- 🖼️ **Image Viewer**: Full-screen preview modal with paging and zoom.
+- 📝 **Smart Export**: Automatic headers, freezing, and filtering in Google Sheets.
+- 📋 **TSV Clipboard**: Copy results in a format ready for Excel/Sheets.
 - 🔒 **Privacy First**: Client-side processing (API keys stored locally).
 
 ## 🚀 Quick Start

@@ -1,7 +1,18 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.0.0-blue)
+![Version](https://img.shields.io/badge/version-v1.1.0-blue)
 All notable changes to this project will be documented in this file.
+
+## [1.1.0] - 2026-01-05
+### Changed
+- **Rebranding**: Renamed the application to **"Receipt Scanner"** (removed "AI" from the name).
+- **Enhanced Export**: Exports to new/empty Google Sheets now automatically include bold headers, a frozen first row, and basic filters.
+- **Improved Clipboard**: "Copy to Clipboard" now uses Tab-delimited (TSV) format for better compatibility with Excel.
+- **UI Refinements**: Added icons to all action buttons (💾, 🧹, 🔄, 📋) and simplified button labels.
+- **Better Security**: The OAuth Client ID field is now masked by default.
+
+### Added
+- **Image Zoom**: You can now click images in the preview modal to zoom in for better detail.
 
 ## [1.0.0] - 2026-01-05
 ### Added
