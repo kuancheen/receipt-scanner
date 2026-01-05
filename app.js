@@ -35,8 +35,31 @@ function saveConfig() {
         config[key] = val;
         localStorage.setItem(key, val);
     });
-    alert('Configuration saved!');
+    showMessage('Configuration saved!', 'success');
     initGoogleAuth(); // Re-init auth if client ID changed
+}
+
+function clearConfig() {
+    if (confirm('Are you sure you want to clear all configurations?')) {
+        CONFIG_KEYS.forEach(key => {
+            localStorage.removeItem(key);
+            document.getElementById(key).value = '';
+            delete config[key];
+        });
+        showMessage('Configuration cleared', 'info');
+        initGoogleAuth();
+    }
+}
+
+function toggleVisibility(id, btn) {
+    const input = document.getElementById(id);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+    }
 }
 
 function setupEventListeners() {
@@ -50,6 +73,8 @@ function setupEventListeners() {
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) handleFile(e.target.files[0]);
     });
+
+    document.getElementById('clear-config').addEventListener('click', clearConfig);
 
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -73,7 +98,7 @@ function setupEventListeners() {
 
 function handleFile(file) {
     if (!file.type.startsWith('image/')) {
-        alert('Please upload an image file (PNG, JPG).');
+        showMessage('Please upload an image file (PNG, JPG).', 'error');
         return;
     }
 
@@ -119,7 +144,7 @@ function handleSignIn() {
     if (!tokenClient) {
         const clientId = config['oauth-client-id'];
         if (!clientId) {
-            alert('Please enter an OAuth Client ID in the Configuration section first.');
+            showMessage('Please enter an OAuth Client ID in the Configuration section first.', 'error');
             return;
         }
 
@@ -127,7 +152,7 @@ function handleSignIn() {
         initGoogleAuth();
 
         if (!tokenClient) {
-            alert('The Google Identity library is still loading. Please wait a moment and try again.');
+            showMessage('The Google Identity library is still loading. Please wait a moment and try again.', 'info');
             return;
         }
     }
@@ -149,7 +174,7 @@ function updateAuthState(isSignedIn) {
 async function summarizeReceipt() {
     const apiKey = config['gemini-api-key'];
     if (!apiKey) {
-        alert('Please enter your Gemini API Key in the Configuration section.');
+        showMessage('Please enter your Gemini API Key in the Configuration section.', 'error');
         return;
     }
 
@@ -198,7 +223,7 @@ Ensure the response is ONLY the JSON object.`;
 
     } catch (error) {
         console.error('Scan Error:', error);
-        alert('Failed to analyze receipt. Check your API key or image quality.');
+        showMessage('Failed to analyze receipt. Check your API key or image quality.', 'error');
     } finally {
         toggleLoading(false);
     }
@@ -214,12 +239,12 @@ function toggleLoading(isLoading) {
 async function exportToSheet() {
     const spreadsheetId = config['spreadsheet-id'];
     if (!spreadsheetId) {
-        alert('Please enter a Google Sheet ID in the Configuration section.');
+        showMessage('Please enter a Google Sheet ID in the Configuration section.', 'error');
         return;
     }
 
     if (!accessToken) {
-        alert('Please sign in with Google first.');
+        showMessage('Please sign in with Google first.', 'info');
         return;
     }
 
@@ -242,13 +267,25 @@ async function exportToSheet() {
         });
 
         if (response.ok) {
-            alert('Transfer successful! Check your Google Sheet.');
+            showMessage('Transfer successful! Check your Google Sheet.', 'success');
         } else {
             const err = await response.json();
             throw new Error(err.error.message);
         }
     } catch (error) {
         console.error('Export Error:', error);
-        alert('Failed to export to Google Sheets: ' + error.message);
+        showMessage('Failed to export to Google Sheets: ' + error.message, 'error');
     }
+}
+
+function showMessage(text, type = 'info') {
+    const msgBox = document.getElementById('status-message');
+    msgBox.textContent = text;
+    msgBox.className = `status-box status-${type}`;
+
+    // Auto-hide after 5 seconds
+    if (window.statusTimeout) clearTimeout(window.statusTimeout);
+    window.statusTimeout = setTimeout(() => {
+        msgBox.classList.add('hidden');
+    }, 5000);
 }

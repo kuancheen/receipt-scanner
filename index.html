@@ -25,6 +25,7 @@
                 <h1>Receipt Scanner AI</h1>
             </div>
             <p class="tagline">Intelligent receipt summarization and Google Sheets export</p>
+            <div id="status-message" class="status-box hidden"></div>
         </header>
 
         <main>
@@ -32,21 +33,32 @@
                 <h2><span class="step-num">1</span> Configuration</h2>
                 <div class="input-group">
                     <label for="gemini-api-key">Gemini API Key</label>
-                    <input type="password" id="gemini-api-key" placeholder="Enter your Gemini API Key">
+                    <div class="input-wrapper">
+                        <input type="password" id="gemini-api-key" placeholder="AIzaSy...">
+                        <button type="button" class="toggle-btn"
+                            onclick="toggleVisibility('gemini-api-key', this)">👁️</button>
+                    </div>
                     <small>Get one at <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI
                             Studio</a></small>
                 </div>
                 <div class="input-group">
                     <label for="oauth-client-id">OAuth Client ID</label>
-                    <input type="text" id="oauth-client-id" placeholder="Enter your Google OAuth Client ID">
+                    <div class="input-wrapper">
+                        <input type="text" id="oauth-client-id" placeholder="...apps.googleusercontent.com">
+                        <button type="button" class="toggle-btn"
+                            onclick="toggleVisibility('oauth-client-id', this)">👁️</button>
+                    </div>
                     <small>Create one in <a href="https://console.cloud.google.com/apis/credentials"
                             target="_blank">Google Cloud Console</a></small>
                 </div>
                 <div class="input-group">
                     <label for="spreadsheet-id">Google Sheet ID</label>
-                    <input type="text" id="spreadsheet-id" placeholder="Enter your Google Sheet ID">
+                    <input type="text" id="spreadsheet-id" placeholder="1abc123...">
                 </div>
-                <button id="save-config" class="btn secondary">Save Configuration</button>
+                <div class="config-actions">
+                    <button id="save-config" class="btn secondary">Save Configuration</button>
+                    <button id="clear-config" class="btn outline">Clear All</button>
+                </div>
             </section>
 
             <section class="upload-section card">
@@ -96,7 +108,7 @@
 
         <footer>
             <p>
-                v0.1.2 |
+                v0.2.0 |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/README.md"
                     target="_blank">README</a> |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/CHANGELOG.md"
@@ -108,7 +120,7 @@
             </p>
         </footer>
     </div>
-    <script src="app.js?v=0.1.2"></script>
+    <script src="app.js?v=0.2.0"></script>
     <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 </body>
 

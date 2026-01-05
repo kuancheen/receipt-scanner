@@ -3,6 +3,13 @@
 ![Version](https://img.shields.io/badge/version-v0.1.2-blue)
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2026-01-05
+### Added
+- Modern in-line messaging system (replacing browser alerts) with themed feedback (success, error, info).
+- "Clear Configuration" functionality to wipe credentials from the app.
+- Visibility toggles (👁️/🙈) for Gemini API Key and OAuth Client ID.
+- Input hints/placeholders for all configuration fields.
+
 ## [0.1.2] - 2026-01-05
 ### Fixed
 - Fixed `ReferenceError: gisLoaded is not defined` by ensuring `app.js` is loaded before the Google Identity Services script.
