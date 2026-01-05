@@ -1,0 +1,117 @@
+<!--
+  Application: Receipt Scanner AI
+  Description: Intelligent web application to scan, summarize, and export receipts to Google Sheets using Gemini AI.
+  Author: kuancheen
+  Copyright: 2026
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt AI - Smart Scanner</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧾</text></svg>">
+    <link rel="stylesheet" href="app.css?v=0.1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body class="dark-theme">
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="icon">🧾</span>
+                <h1>Receipt Scanner AI</h1>
+            </div>
+            <p class="tagline">Intelligent receipt summarization and Google Sheets export</p>
+        </header>
+
+        <main>
+            <section class="config-section card">
+                <h2><span class="step-num">1</span> Configuration</h2>
+                <div class="input-group">
+                    <label for="gemini-api-key">Gemini API Key</label>
+                    <input type="password" id="gemini-api-key" placeholder="Enter your Gemini API Key">
+                    <small>Get one at <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI
+                            Studio</a></small>
+                </div>
+                <div class="input-group">
+                    <label for="oauth-client-id">OAuth Client ID</label>
+                    <input type="text" id="oauth-client-id" placeholder="Enter your Google OAuth Client ID">
+                    <small>Create one in <a href="https://console.cloud.google.com/apis/credentials"
+                            target="_blank">Google Cloud Console</a></small>
+                </div>
+                <div class="input-group">
+                    <label for="spreadsheet-id">Google Sheet ID</label>
+                    <input type="text" id="spreadsheet-id" placeholder="Enter your Google Sheet ID">
+                </div>
+                <button id="save-config" class="btn secondary">Save Configuration</button>
+            </section>
+
+            <section class="upload-section card">
+                <h2><span class="step-num">2</span> Scan Receipt</h2>
+                <div id="auth-container" class="auth-box">
+                    <p>Sign in to enable exporting to Google Sheets</p>
+                    <button id="sign-in-btn" class="btn primary">Sign in with Google</button>
+                    <button id="sign-out-btn" class="btn secondary hidden">Sign out</button>
+                </div>
+
+                <div class="drop-zone" id="drop-zone">
+                    <div class="drop-zone-content">
+                        <span class="upload-icon">📸</span>
+                        <p>Click or Drag receipt image here</p>
+                        <input type="file" id="file-input" accept="image/*" capture="environment" hidden>
+                    </div>
+                </div>
+                <div id="preview-container" class="hidden">
+                    <img id="image-preview" src="" alt="Receipt Preview">
+                    <button id="scan-btn" class="btn primary">Summarize with AI</button>
+                </div>
+            </section>
+
+            <section id="results-section" class="results-section card hidden">
+                <h2><span class="step-num">3</span> AI Summary</h2>
+                <div id="loading-indicator" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>AI is analyzing your receipt...</p>
+                </div>
+                <div id="analysis-results" class="results-content">
+                    <div class="result-item">
+                        <label>Date of Purchase</label>
+                        <input type="text" id="res-date">
+                    </div>
+                    <div class="result-item">
+                        <label>Summary & Highlights</label>
+                        <textarea id="res-details" rows="3"></textarea>
+                    </div>
+                    <div class="result-item">
+                        <label>Total Amount</label>
+                        <input type="text" id="res-amount">
+                    </div>
+                    <button id="export-btn" class="btn success">Export to Google Sheet</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>
+                v0.1.0 |
+                <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/README.md"
+                    target="_blank">README</a> |
+                <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/CHANGELOG.md"
+                    target="_blank">CHANGELOG</a> |
+                &copy; <span id="year">2026</span> <a href="https://github.com/kuancheen" target="_blank">kuancheen</a>
+                |
+                <img src="https://hits.sh/kuancheen.github.io/receipt-scanner.svg?view=today-total&style=flat-square&label=👁️%20Views&extraCount=0&color=6366f1"
+                    alt="Hits">
+            </p>
+        </footer>
+    </div>
+    <script src="app.js?v=0.1.0"></script>
+</body>
+
+</html>
