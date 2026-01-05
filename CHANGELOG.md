@@ -1,7 +1,11 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v0.2.4-blue)
+![Version](https://img.shields.io/badge/version-v0.2.5-blue)
 All notable changes to this project will be documented in this file.
+
+## [0.2.5] - 2026-01-05
+### Fixed
+- Reverted Gemini API endpoint to `v1beta` to ensure compatibility with the `gemini-1.5-flash` model identifier.
 
 ## [0.2.4] - 2026-01-05
 ### Fixed
