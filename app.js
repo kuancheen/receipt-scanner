@@ -10,8 +10,14 @@ let accessToken = null;
 document.addEventListener('DOMContentLoaded', () => {
     loadConfig();
     setupEventListeners();
-    initGoogleAuth();
+    // initGoogleAuth will be called by gisLoaded or after config save
 });
+
+// Global callback for GIS library load
+window.gisLoaded = () => {
+    console.log('GIS library loaded');
+    initGoogleAuth();
+};
 
 function loadConfig() {
     CONFIG_KEYS.forEach(key => {
@@ -86,23 +92,44 @@ function initGoogleAuth() {
     const clientId = config['oauth-client-id'];
     if (!clientId) return;
 
-    tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: clientId,
-        scope: 'https://www.googleapis.com/auth/spreadsheets',
-        callback: (response) => {
-            if (response.error !== undefined) {
-                throw (response);
-            }
-            accessToken = response.access_token;
-            updateAuthState(true);
-        },
-    });
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+        console.log('GIS library not yet loaded. Waiting for callback...');
+        return;
+    }
+
+    try {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: clientId,
+            scope: 'https://www.googleapis.com/auth/spreadsheets',
+            callback: (response) => {
+                if (response.error !== undefined) {
+                    throw (response);
+                }
+                accessToken = response.access_token;
+                updateAuthState(true);
+            },
+        });
+        console.log('Token client initialized');
+    } catch (err) {
+        console.error('Error initializing GIS:', err);
+    }
 }
 
 function handleSignIn() {
     if (!tokenClient) {
-        alert('Please enter an OAuth Client ID first.');
-        return;
+        const clientId = config['oauth-client-id'];
+        if (!clientId) {
+            alert('Please enter an OAuth Client ID in the Configuration section first.');
+            return;
+        }
+
+        // Attempt re-init if Client ID exists but client is missing
+        initGoogleAuth();
+
+        if (!tokenClient) {
+            alert('The Google Identity library is still loading. Please wait a moment and try again.');
+            return;
+        }
     }
     tokenClient.requestAccessToken({ prompt: 'consent' });
 }
