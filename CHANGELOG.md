@@ -1,7 +1,11 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.1.4-blue)
+![Version](https://img.shields.io/badge/version-v1.1.5-blue)
 All notable changes to this project will be documented in this file.
+
+## [1.1.5] - 2026-01-06
+### Added
+- **Pan-to-Zoom**: When zoomed in, the image now follows your mouse movements, allowing you to easily pan and inspect every corner of the receipt without extra controls.
 
 ## [1.1.4] - 2026-01-06
 ### Changed

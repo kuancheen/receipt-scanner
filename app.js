@@ -669,8 +669,21 @@ function openImageModal(index) {
 
     updateModalImage(content);
 
-    // Zoom toggle
+    // Zoom toggle and Panning
     const display = content.querySelector('.image-display');
+    const img = content.querySelector('#modal-image');
+
+    display.onmousemove = (e) => {
+        if (!display.classList.contains('zoom-2') &&
+            !display.classList.contains('zoom-3') &&
+            !display.classList.contains('zoom-4')) return;
+
+        const rect = display.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        img.style.transformOrigin = `${x}% ${y}%`;
+    };
+
     display.onclick = () => {
         if (display.classList.contains('zoom-2')) {
             display.classList.remove('zoom-2');
@@ -680,6 +693,7 @@ function openImageModal(index) {
             display.classList.add('zoom-4');
         } else if (display.classList.contains('zoom-4')) {
             display.classList.remove('zoom-4');
+            img.style.transformOrigin = 'center';
         } else {
             display.classList.add('zoom-2');
         }
