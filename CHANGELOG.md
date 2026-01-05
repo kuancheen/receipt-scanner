@@ -1,7 +1,14 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v0.3.1-blue)
+![Version](https://img.shields.io/badge/version-v1.0.0-blue)
 All notable changes to this project will be documented in this file.
+
+## [1.0.0] - 2026-01-05
+### Added
+- **Image Viewer Modal**: Click any filename in the list to view the receipt in a full-screen modal with paging (Prev/Next).
+- **Advanced Sheet Export**: The app now fetches all tabs from your Google Sheet, allowing you to select a destination sheet or create a new one directly.
+- **CSV Clipboard Support**: "Copy to Clipboard" now copies data in a standardized CSV table format for easy importing into other software.
+- **Enhanced UI**: Custom modal system with glassmorphism and smooth transitions.
 
 ## [0.3.1] - 2026-01-05
 ### Fixed

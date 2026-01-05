@@ -119,7 +119,7 @@
 
         <footer>
             <p>
-                v0.3.1 |
+                v1.0.0 |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/README.md"
                     target="_blank">README</a> |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/CHANGELOG.md"
@@ -131,8 +131,50 @@
             </p>
         </footer>
     </div>
-    <script src="app.js?v=0.3.1"></script>
+    <script src="app.js?v=1.0.0"></script>
     <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
+
+    <!-- Global Modal System -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal-container">
+            <button id="modal-close" class="modal-close">&times;</button>
+            <div id="modal-content">
+                <!-- Content dynamically injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Templates (Hidden) -->
+    <template id="image-viewer-template">
+        <div class="image-viewer">
+            <button id="prev-img" class="nav-btn prev">&lt;</button>
+            <div class="image-display">
+                <img id="modal-image" src="" alt="Receipt Large View">
+                <p id="modal-image-index" class="image-index"></p>
+            </div>
+            <button id="next-img" class="nav-btn next">&gt;</button>
+        </div>
+    </template>
+
+    <template id="sheet-selector-template">
+        <div class="sheet-selector">
+            <h3>Select Destination Sheet</h3>
+            <p class="modal-desc">Which tab should we import the data into?</p>
+            <div class="sheet-input-group">
+                <select id="sheet-dropdown" class="select-input">
+                    <!-- Sheets populated here -->
+                </select>
+                <button id="new-sheet-btn" class="btn outline icon-btn" title="Create new sheet">+</button>
+            </div>
+            <div id="new-sheet-input-container" class="hidden">
+                <input type="text" id="new-sheet-name" placeholder="Enter new sheet name..." class="text-input">
+            </div>
+            <div class="modal-actions">
+                <button id="cancel-export" class="btn outline">Cancel</button>
+                <button id="confirm-export" class="btn success">Confirm Export</button>
+            </div>
+        </div>
+    </template>
 </body>
 
 </html>

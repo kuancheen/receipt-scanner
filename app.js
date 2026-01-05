@@ -12,6 +12,7 @@ let accessToken = null;
 let processingQueue = [];
 let processedResults = [];
 let isProcessing = false;
+let currentModalImageIndex = 0;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
@@ -138,9 +139,15 @@ function setupEventListeners() {
 
     document.getElementById('sign-in-btn').addEventListener('click', handleSignIn);
     document.getElementById('sign-out-btn').addEventListener('click', handleSignOut);
+
+    // Modal Events
+    document.getElementById('modal-close').addEventListener('click', hideModal);
+    document.getElementById('modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'modal-overlay') hideModal();
+    });
 }
 
-function handleFiles(files) {
+async function handleFiles(files) {
     const validFiles = files.filter(file => file.type.startsWith('image/'));
 
     if (validFiles.length === 0) {
@@ -148,10 +155,15 @@ function handleFiles(files) {
         return;
     }
 
-    processingQueue = validFiles.map(file => ({
-        file,
-        status: 'pending',
-        result: null
+    // Prepare queue and load base64 for preview
+    processingQueue = await Promise.all(validFiles.map(async (file) => {
+        const base64 = await fileToBase64Full(file);
+        return {
+            file,
+            base64,
+            status: 'pending',
+            result: null
+        };
     }));
 
     processedResults = [];
@@ -159,11 +171,12 @@ function handleFiles(files) {
     // Render file list
     const fileList = document.getElementById('file-list-preview');
     fileList.innerHTML = '';
-    validFiles.forEach(file => {
-        const item = document.createElement('div');
-        item.className = 'file-item';
-        item.textContent = file.name;
-        fileList.appendChild(item);
+    processingQueue.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'file-item';
+        div.textContent = item.file.name;
+        div.onclick = () => openImageModal(index);
+        fileList.appendChild(div);
     });
 
     renderResultsTable();
@@ -172,6 +185,15 @@ function handleFiles(files) {
     document.getElementById('drop-zone').classList.add('hidden');
 
     showMessage(`${validFiles.length} file(s) ready for analysis.`, 'info', 'scan-status');
+}
+
+function fileToBase64Full(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 // Google Auth Logic
@@ -385,6 +407,92 @@ async function exportToSheet() {
         return;
     }
 
+    try {
+        // 1. Fetch available sheets
+        const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`, {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch spreadsheet metadata.');
+        const data = await response.json();
+        const sheets = data.sheets.map(s => s.properties.title);
+
+        showSheetSelectorModal(sheets);
+    } catch (error) {
+        console.error('Export Error:', error);
+        showMessage('Failed to connect to Google Sheets: ' + error.message, 'error', 'export-status');
+    }
+}
+
+function showSheetSelectorModal(sheets) {
+    const template = document.getElementById('sheet-selector-template');
+    const content = template.content.cloneNode(true);
+
+    const dropdown = content.querySelector('#sheet-dropdown');
+    sheets.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        dropdown.appendChild(opt);
+    });
+
+    const newBtn = content.querySelector('#new-sheet-btn');
+    const newContainer = content.querySelector('#new-sheet-input-container');
+    newBtn.onclick = () => newContainer.classList.toggle('hidden');
+
+    const confirmBtn = content.querySelector('#confirm-export');
+    const cancelBtn = content.querySelector('#cancel-export');
+
+    cancelBtn.onclick = hideModal;
+    confirmBtn.onclick = async () => {
+        const isNew = !newContainer.classList.contains('hidden');
+        const sheetName = isNew ? document.getElementById('new-sheet-name').value.trim() : dropdown.value;
+
+        if (isNew && !sheetName) {
+            alert('Please enter a name for the new sheet.');
+            return;
+        }
+
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Exporting...';
+
+        try {
+            if (isNew) {
+                await createNewSheet(sheetName);
+            }
+            await performAppend(sheetName);
+            hideModal();
+            showMessage(`Success! Data exported to "${sheetName}".`, 'success', 'export-status');
+        } catch (err) {
+            alert('Export failed: ' + err.message);
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = 'Confirm Export';
+        }
+    };
+
+    showModal('selector', content);
+}
+
+async function createNewSheet(title) {
+    const spreadsheetId = config['spreadsheet-id'];
+    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            requests: [{ addSheet: { properties: { title } } }]
+        })
+    });
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error.message);
+    }
+}
+
+async function performAppend(sheetName) {
+    const spreadsheetId = config['spreadsheet-id'];
     const rows = processedResults.map(res => [
         res.date || '',
         res.company || '',
@@ -392,27 +500,18 @@ async function exportToSheet() {
         res.amount || ''
     ]);
 
-    try {
-        const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A1:append?valueInputOption=USER_ENTERED`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                values: rows
-            })
-        });
+    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/'${sheetName}'!A1:append?valueInputOption=USER_ENTERED`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ values: rows })
+    });
 
-        if (response.ok) {
-            showMessage(`Success! ${rows.length} row(s) added to Google Sheet.`, 'success', 'export-status');
-        } else {
-            const err = await response.json();
-            throw new Error(err.error.message);
-        }
-    } catch (error) {
-        console.error('Export Error:', error);
-        showMessage('Failed to export to Google Sheets: ' + error.message, 'error', 'export-status');
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error.message);
     }
 }
 
@@ -422,12 +521,24 @@ function copyToClipboard() {
         return;
     }
 
-    const text = processedResults.map(res =>
-        `Date: ${res.date || 'N/A'}\nCompany: ${res.company || 'N/A'}\nDetails: ${res.details || 'N/A'}\nAmount: ${res.amount || 'N/A'}\n---`
-    ).join('\n');
+    // CSV Format: Date, Company, Details, Amount
+    const header = "Date,Company,Summary & Highlights,Amount";
+    const escape = (val) => {
+        const str = String(val || '');
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+            return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+    };
 
-    navigator.clipboard.writeText(text).then(() => {
-        showMessage('Copied to clipboard!', 'success', 'export-status');
+    const rows = processedResults.map(res =>
+        [res.date, res.company, res.details, res.amount].map(escape).join(',')
+    );
+
+    const csvContent = [header, ...rows].join('\n');
+
+    navigator.clipboard.writeText(csvContent).then(() => {
+        showMessage('Copied as CSV table!', 'success', 'export-status');
     }).catch(err => {
         console.error('Clipboard Error:', err);
         showMessage('Failed to copy to clipboard.', 'error', 'export-status');
@@ -447,6 +558,60 @@ function showMessage(text, type = 'info', targetId = null) {
         msgBox.classList.add('hidden');
     }, 5000);
 }
+// Modal Management
+function showModal(type, contentNode) {
+    const overlay = document.getElementById('modal-overlay');
+    const container = document.getElementById('modal-content');
+    container.innerHTML = '';
+    container.appendChild(contentNode);
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Prevent scroll
+}
+
+function hideModal() {
+    const overlay = document.getElementById('modal-overlay');
+    overlay.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+function openImageModal(index) {
+    currentModalImageIndex = index;
+    const template = document.getElementById('image-viewer-template');
+    const content = template.content.cloneNode(true);
+
+    updateModalImage(content);
+
+    // Wire up paging
+    content.querySelector('#prev-img').onclick = () => {
+        if (currentModalImageIndex > 0) {
+            currentModalImageIndex--;
+            updateModalImage(document);
+        }
+    };
+    content.querySelector('#next-img').onclick = () => {
+        if (currentModalImageIndex < processingQueue.length - 1) {
+            currentModalImageIndex++;
+            updateModalImage(document);
+        }
+    };
+
+    showModal('image', content);
+}
+
+function updateModalImage(root) {
+    const item = processingQueue[currentModalImageIndex];
+    const img = root.getElementById('modal-image');
+    const prev = root.getElementById('prev-img');
+    const next = root.getElementById('next-img');
+    const indexText = root.getElementById('modal-image-index');
+
+    img.src = item.base64;
+    indexText.textContent = `Receipt ${currentModalImageIndex + 1} of ${processingQueue.length} (${item.file.name})`;
+
+    prev.disabled = currentModalImageIndex === 0;
+    next.disabled = currentModalImageIndex === processingQueue.length - 1;
+}
+
 function resetScan() {
     processingQueue = [];
     processedResults = [];
