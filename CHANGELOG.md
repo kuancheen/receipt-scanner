@@ -1,7 +1,12 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.3.0-blue)
+![Version](https://img.shields.io/badge/version-v1.3.1-blue)
 All notable changes to this project will be documented in this file.
+
+## [v1.3.1] - 2026-01-07
+### Added
+- **Locale-Aware Date Parsing**: The AI now automatically detects your browser's region (e.g., `en-GB` vs `en-US`) to correctly interpret ambiguous dates (like 06/01/2026 as Jan 6th or June 1st).
+- **Date Format Indicator**: A new helper text appears below the scan buttons showing exactly which date format (DD/MM/YYYY or MM/DD/YYYY) is being used for analysis.
 
 ## [v1.3.0] - 2026-01-06
 ### Added

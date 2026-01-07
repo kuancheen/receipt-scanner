@@ -202,6 +202,25 @@ async function handleFiles(files) {
 
     const typeMsg = validFiles.some(f => f.type === 'application/pdf') ? 'Images and PDFs' : 'Files';
     showMessage(`${validFiles.length} ${typeMsg} ready for analysis.`, 'info', 'scan-status');
+
+    // Show date format hint
+    const { locale, format } = getDateFormatResult();
+    const hint = document.getElementById('date-format-hint');
+    hint.textContent = `Using date format ${format} based on your locale (${locale}).`;
+    hint.classList.remove('hidden');
+}
+
+function getDateFormatResult() {
+    const locale = navigator.language || 'en-US';
+    const testDate = new Date(2023, 10, 25); // Nov 25, 2023
+    const formatPart = new Intl.DateTimeFormat(locale).format(testDate);
+
+    // Simple heuristic: if 25 starts the string, it's DMY. If 11 starts, it's MDY.
+    // Nov is 11.
+    const isDMY = formatPart.startsWith('25');
+    const format = isDMY ? 'DD/MM/YYYY' : 'MM/DD/YYYY';
+
+    return { locale, format };
 }
 
 async function pdfToImageBase64(file) {
@@ -348,6 +367,10 @@ async function summarizeReceipt(file, apiKey) {
 "company": "The name of the company or seller that issued the receipt",
 "details": "A concise summary of what was purchased, highlighting one or two notable items as examples",
 "amount": "The total amount paid as a number (without currency symbols)"
+
+CONTEXT:
+User Locale: ${getDateFormatResult().locale}
+Expected Date Format: ${getDateFormatResult().format} (Prioritize this format when interpreting numerical dates like 06/01/2026)
 
 Ensure the response is ONLY the JSON object.`;
 
@@ -782,5 +805,7 @@ function resetScan() {
     document.getElementById('preview-container').classList.add('hidden');
     document.getElementById('results-section').classList.add('hidden');
     document.getElementById('drop-zone').classList.remove('hidden');
+    document.getElementById('drop-zone').classList.remove('hidden');
     document.getElementById('file-input').value = ''; // Clear file input
+    document.getElementById('date-format-hint').classList.add('hidden');
 }
