@@ -206,7 +206,7 @@ async function handleFiles(files) {
     // Show date format hint
     const { locale, format } = getDateFormatResult();
     const hint = document.getElementById('date-format-hint');
-    hint.textContent = `Using date format ${format} based on your locale (${locale}).`;
+    hint.textContent = `📅  Info: Detecting dates as ${format} based on your locale (${locale})`;
     hint.classList.remove('hidden');
 }
 
@@ -370,7 +370,8 @@ async function summarizeReceipt(file, apiKey) {
 
 CONTEXT:
 User Locale: ${getDateFormatResult().locale}
-Expected Date Format: ${getDateFormatResult().format} (Prioritize this format when interpreting numerical dates like 06/01/2026)
+Input Date Interpretation: ${getDateFormatResult().format} (Use this to interpret the receipt image)
+Output Date Format: YYYY-MM-DD (Strictly use this ISO format for the JSON output)
 
 Ensure the response is ONLY the JSON object.`;
 

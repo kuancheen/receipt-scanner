@@ -61,11 +61,15 @@ header {
 }
 
 .hint-text {
-    font-size: 0.85rem;
-    color: var(--text-dim);
+    font-size: 0.75rem;
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 6px;
+    padding: 4px 12px;
+    width: fit-content;
+    margin: 0.5rem auto 0;
     text-align: center;
-    margin-top: 0.5rem;
-    font-style: italic;
 }
 
 .status-error {

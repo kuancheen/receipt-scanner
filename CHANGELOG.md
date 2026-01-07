@@ -1,7 +1,12 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.3.1-blue)
+![Version](https://img.shields.io/badge/version-v1.3.2-blue)
 All notable changes to this project will be documented in this file.
+
+## [v1.3.2] - 2026-01-07
+### Changed
+- **Refined UI**: The date format hint is now smaller, styled as an info badge, and clearer to read.
+- **Strict Date Output**: The AI is now explicitly instructed to *always* output dates in `YYYY-MM-DD` format (ISO 8601), regardless of the input's locale format, ensuring consistent database sorting.
 
 ## [v1.3.1] - 2026-01-07
 ### Added
