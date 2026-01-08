@@ -1,7 +1,12 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.5.1-blue)
+![Version](https://img.shields.io/badge/version-v1.5.2-blue)
 All notable changes to this project will be documented in this file.
+
+## [v1.5.2] - 2026-01-08
+### Changed
+- **UI Logic**: In "Detailed" mode, the table now displays the full itemized breakdown (multiline) instead of just the item count.
+- **UI Text**: Renamed the scan button to "**🔍 Scan**" and table header to "**Summary / Details**" for clarity.
 
 ## [v1.5.1] - 2026-01-08
 ### Fixed

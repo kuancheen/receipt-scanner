@@ -433,7 +433,8 @@ function renderResultsTable() {
             // For detailed mode, we preview only the first few items or a summary text
             let descPreview = item.result.details || '';
             if (!descPreview && item.result.items) {
-                descPreview = `${item.result.items.length} items extracted`;
+                // Format as "Item: Price" on new lines
+                descPreview = item.result.items.map(i => `${i.desc}: ${i.amount}`).join('\n');
             }
 
             tr.innerHTML = `
