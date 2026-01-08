@@ -786,12 +786,8 @@ footer {
     transform: scale(1.05);
 }
 
-/* Specific colors for modes */
-#mode-summary:checked+label {
-    background-color: var(--primary);
-    color: white;
-}
-
+/* Specific colors for modes - unified orange gradient */
+#mode-summary:checked+label,
 #mode-detail:checked+label {
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     color: white;

@@ -427,24 +427,54 @@ function renderResultsTable() {
     body.innerHTML = '';
 
     processingQueue.forEach((item, index) => {
-        const tr = document.createElement('tr');
-
         if (item.status === 'completed' && item.result) {
-            // For detailed mode, we preview only the first few items or a summary text
-            let descPreview = item.result.details || '';
-            if (!descPreview && item.result.items) {
-                // Format as "Item: Price" on new lines
-                descPreview = item.result.items.map(i => `${i.desc}: ${i.amount}`).join('\n');
-            }
+            // Check if this is detailed mode with items array
+            if (item.result.items && Array.isArray(item.result.items)) {
+                // Detailed mode: Create multiple rows
+                item.result.items.forEach((lineItem, itemIndex) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${item.result.date || 'N/A'}</td>
+                        <td>${item.result.invoice_number || '-'}</td>
+                        <td>${item.result.company || 'N/A'}</td>
+                        <td>${lineItem.desc || 'N/A'}</td>
+                        <td>${lineItem.amount || 'N/A'}</td>
+                    `;
+                    body.appendChild(tr);
+                });
 
-            tr.innerHTML = `
-                <td>${item.result.date || 'N/A'}</td>
-                <td>${item.result.invoice_number || '-'}</td>
-                <td>${item.result.company || 'N/A'}</td>
-                <td>${descPreview}</td>
-                <td>${item.result.amount || 'N/A'}</td>
-            `;
+                // Add total row
+                const totalRow = document.createElement('tr');
+                totalRow.style.fontWeight = 'bold';
+                totalRow.style.borderTop = '2px solid var(--border-color)';
+                totalRow.innerHTML = `
+                    <td>${item.result.date || 'N/A'}</td>
+                    <td>${item.result.invoice_number || '-'}</td>
+                    <td>${item.result.company || 'N/A'}</td>
+                    <td>>>> TOTAL</td>
+                    <td>${item.result.amount || 'N/A'}</td>
+                `;
+                body.appendChild(totalRow);
+
+                // Add spacer row
+                const spacerRow = document.createElement('tr');
+                spacerRow.style.height = '10px';
+                spacerRow.innerHTML = '<td colspan="5" style="border: none;"></td>';
+                body.appendChild(spacerRow);
+            } else {
+                // Summarized mode: Single row
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.result.date || 'N/A'}</td>
+                    <td>${item.result.invoice_number || '-'}</td>
+                    <td>${item.result.company || 'N/A'}</td>
+                    <td>${item.result.details || 'N/A'}</td>
+                    <td>${item.result.amount || 'N/A'}</td>
+                `;
+                body.appendChild(tr);
+            }
         } else {
+            const tr = document.createElement('tr');
             const statusText = item.status === 'processing' ? '⏳ Analyzing...' :
                 item.status === 'error' ? `❌ Error: ${item.error}` : '🕒 Pending';
             tr.innerHTML = `
@@ -452,8 +482,8 @@ function renderResultsTable() {
                     ${item.file.name}: ${statusText}
                 </td>
             `;
+            body.appendChild(tr);
         }
-        body.appendChild(tr);
     });
 }
 

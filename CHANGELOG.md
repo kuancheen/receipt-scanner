@@ -1,7 +1,13 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.5.2-blue)
+![Version](https://img.shields.io/badge/version-v1.5.3-blue)
 All notable changes to this project will be documented in this file.
+
+## [v1.5.3] - 2026-01-08
+### Changed
+- **Unified Toggle Colors**: Both extraction modes now use the same orange gradient when selected for visual consistency.
+- **Multi-Row Detailed Display**: In "Detailed" mode, each line item now appears as a separate table row (instead of multi-line in one cell) for better readability.
+- **Cleaner Loading**: Removed redundant "AI is analyzing..." text since the table already shows per-file status.
 
 ## [v1.5.2] - 2026-01-08
 ### Changed
