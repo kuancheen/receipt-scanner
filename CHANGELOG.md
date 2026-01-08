@@ -1,7 +1,12 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.5.0-blue)
+![Version](https://img.shields.io/badge/version-v1.5.1-blue)
 All notable changes to this project will be documented in this file.
+
+## [v1.5.1] - 2026-01-08
+### Fixed
+- **UI Visibility**: Fixed an issue where the "Summarized" button background was invisible due to a CSS variable mismatch.
+- **Contextual Help**: Added hover tooltips to the "Extraction Mode" toggle to clearly explain the difference between Summarized and Detailed modes.
 
 ## [v1.5.0] - 2026-01-08
 ### Added

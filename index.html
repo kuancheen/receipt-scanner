@@ -88,9 +88,11 @@
                         <label class="toggle-label">Extraction Mode:</label>
                         <div class="switch-field">
                             <input type="radio" id="mode-summary" name="extraction-mode" value="summary" checked />
-                            <label for="mode-summary">Summarized</label>
+                            <label for="mode-summary"
+                                data-tooltip="Single row per receipt. Best for quick tracking.">Summarized</label>
                             <input type="radio" id="mode-detail" name="extraction-mode" value="detail" />
-                            <label for="mode-detail">Detailed</label>
+                            <label for="mode-detail"
+                                data-tooltip="Multiple rows (one per item). Best for pivot tables.">Detailed</label>
                         </div>
                     </div>
 
@@ -137,7 +139,7 @@
 
         <footer>
             <p>
-                v1.5.0 |
+                v1.5.1 |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/README.md"
                     target="_blank">README</a> |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/CHANGELOG.md"
@@ -149,7 +151,7 @@
             </p>
         </footer>
     </div>
-    <script src="app.js?v=1.5.0"></script>
+    <script src="app.js?v=1.5.1"></script>
     <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 
     <!-- Global Modal System -->

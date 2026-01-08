@@ -727,6 +727,7 @@ footer {
     padding: 4px;
     border: 1px solid var(--border-color);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    /* overflow: hidden; Removed to allow tooltips */
 }
 
 .switch-field input {
@@ -750,10 +751,33 @@ footer {
     transition: all 0.3s ease;
     cursor: pointer;
     font-weight: 500;
+    position: relative;
+    /* For tooltip positioning */
 }
 
 .switch-field label:hover {
     color: var(--text-main);
+}
+
+/* Tooltip Styles */
+.switch-field label[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.95);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    animation: fadeIn 0.2s forwards;
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 }
 
 .switch-field input:checked+label {
@@ -764,7 +788,7 @@ footer {
 
 /* Specific colors for modes */
 #mode-summary:checked+label {
-    background-color: var(--primary-color);
+    background-color: var(--primary);
     color: white;
 }
 
