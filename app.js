@@ -206,7 +206,7 @@ async function handleFiles(files) {
     // Show date format hint
     const { locale, format } = getDateFormatResult();
     const hint = document.getElementById('date-format-hint');
-    hint.textContent = `📅  Info: Detecting dates as ${format} based on your locale (${locale})`;
+    hint.textContent = `📅 Using date format: ${format} (${locale}) based on your browser setting`;
     hint.classList.remove('hidden');
 }
 

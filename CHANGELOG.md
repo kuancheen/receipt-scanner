@@ -1,7 +1,11 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.5.3-blue)
+![Version](https://img.shields.io/badge/version-v1.5.4-blue)
 All notable changes to this project will be documented in this file.
+
+## [v1.5.4] - 2026-01-08
+### Changed
+- **UI Text Refinement**: Updated the locale date detection hint to be more human-friendly (e.g., "Using date format: DD/MM/YYYY (en-GB) based on your browser setting").
 
 ## [v1.5.3] - 2026-01-08
 ### Changed
