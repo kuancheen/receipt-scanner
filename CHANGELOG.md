@@ -1,7 +1,13 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.4.0-blue)
+![Version](https://img.shields.io/badge/version-v1.5.0-blue)
 All notable changes to this project will be documented in this file.
+
+## [v1.5.0] - 2026-01-08
+### Added
+- **Invoice Number Extraction**: A new dedicated column supports extracting invoice/receipt numbers.
+- **Multi-Row Detailed Exports**: The "Detailed" mode now exports separate rows for every line item (instead of one summary row), with Date/Invoice/Company repeated for each row to enable pivot table analysis.
+- **Enhanced UI**: Completely redesigned the Extraction Mode toggle for better visibility, making it easier to switch between Summary and Detailed views.
 
 ## [v1.4.0] - 2026-01-08
 ### Added

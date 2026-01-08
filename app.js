@@ -363,14 +363,15 @@ async function summarizeReceipt(file, apiKey, mode = 'summary') {
     const base64Data = await fileToBase64(file);
     const mimeType = file.type;
 
-    let detailsPrompt = `"details": "A concise summary of what was purchased, highlighting one or two notable items as examples"`;
+    let detailsPrompt = `"details": "A concise summary of what was purchased, highlighting one or two notable items as examples."`;
 
     if (mode === 'detail') {
-        detailsPrompt = `"details": "A single multi-line string containing the full list of items. Start with '--- Details ---\\n' followed by each line item (Name: Price) on a new line. Then add '--- Breakdown ---\\n' followed by Subtotal, Tax, Discount, etc., on new lines."`;
+        detailsPrompt = `"items": [{"desc": "Item Name", "amount": "Item Price"}, ... ]\n(Extract EVERY line item, tax, discount, service charge, and rounding as individual objects in this array.)`;
     }
 
     const prompt = `Analyze this receipt. Extract and summarize the purchase into a JSON format with these exact keys:
 "date": "Date of purchase (YYYY-MM-DD)",
+"invoice_number": "The invoice or receipt number (if found, else empty string)",
 "company": "The name of the company or seller that issued the receipt",
 ${detailsPrompt},
 "amount": "The total amount paid as a number (without currency symbols)"
@@ -429,17 +430,24 @@ function renderResultsTable() {
         const tr = document.createElement('tr');
 
         if (item.status === 'completed' && item.result) {
+            // For detailed mode, we preview only the first few items or a summary text
+            let descPreview = item.result.details || '';
+            if (!descPreview && item.result.items) {
+                descPreview = `${item.result.items.length} items extracted`;
+            }
+
             tr.innerHTML = `
                 <td>${item.result.date || 'N/A'}</td>
+                <td>${item.result.invoice_number || '-'}</td>
                 <td>${item.result.company || 'N/A'}</td>
-                <td>${item.result.details || 'N/A'}</td>
+                <td>${descPreview}</td>
                 <td>${item.result.amount || 'N/A'}</td>
             `;
         } else {
             const statusText = item.status === 'processing' ? '⏳ Analyzing...' :
                 item.status === 'error' ? `❌ Error: ${item.error}` : '🕒 Pending';
             tr.innerHTML = `
-                <td colspan="4" style="text-align: center; color: var(--text-dim); font-style: italic;">
+                <td colspan="5" style="text-align: center; color: var(--text-dim); font-style: italic;">
                     ${item.file.name}: ${statusText}
                 </td>
             `;
@@ -598,7 +606,7 @@ async function performAppend(sheetName) {
 
     if (needsHeader) {
         // Prepare header row and formatting
-        const headers = ["Date", "Company", "Summary & Highlights", "Amount"];
+        const headers = ["Date", "Invoice No", "Company", "Summary / Details", "Amount"];
 
         // Add header
         await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/'${sheetName}'!A1:append?valueInputOption=USER_ENTERED`, {
@@ -642,7 +650,7 @@ async function performAppend(sheetName) {
                     },
                     {
                         updateSheetProperties: {
-                            properties: { sheetId: sheetId, gridProperties: { frozenRowCount: 1, columnCount: 4 } },
+                            properties: { sheetId: sheetId, gridProperties: { frozenRowCount: 1, columnCount: 5 } },
                             fields: 'gridProperties.frozenRowCount,gridProperties.columnCount'
                         }
                     },
@@ -656,12 +664,40 @@ async function performAppend(sheetName) {
         });
     }
 
-    const rows = processedResults.map(res => [
-        res.date || '',
-        res.company || '',
-        res.details || '',
-        res.amount || ''
-    ]);
+    const rows = [];
+    processedResults.forEach(res => {
+        if (res.items && Array.isArray(res.items)) {
+            // Detailed Mode: Multi-row
+            res.items.forEach(item => {
+                rows.push([
+                    res.date || '',
+                    res.invoice_number || '',
+                    res.company || '',
+                    item.desc || '',
+                    item.amount || ''
+                ]);
+            });
+            // Append Total row
+            rows.push([
+                res.date || '',
+                res.invoice_number || '',
+                res.company || '',
+                '>>> TOTAL',
+                res.amount || ''
+            ]);
+            // Optional spacer
+            rows.push(['', '', '', '', '']);
+        } else {
+            // Summarized Mode: Single row
+            rows.push([
+                res.date || '',
+                res.invoice_number || '',
+                res.company || '',
+                res.details || '',
+                res.amount || ''
+            ]);
+        }
+    });
 
     const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/'${sheetName}'!A1:append?valueInputOption=USER_ENTERED`, {
         method: 'POST',
@@ -690,11 +726,40 @@ function copyToClipboard() {
         return;
     }
 
-    // TSV Format: Date, Company, Details, Amount
-    const header = "Date\tCompany\tSummary & Highlights\tAmount";
-    const rows = processedResults.map(res =>
-        [res.date, res.company, res.details, res.amount].join('\t')
-    );
+    // TSV Format: Date, Invoice, Company, Details, Amount
+    const header = "Date\tInvoice No\tCompany\tSummary / Details\tAmount";
+    const rows = [];
+
+    processedResults.forEach(res => {
+        if (res.items && Array.isArray(res.items)) {
+            res.items.forEach(item => {
+                rows.push([
+                    res.date || '',
+                    res.invoice_number || '',
+                    res.company || '',
+                    item.desc || '',
+                    item.amount || ''
+                ].join('\t'));
+            });
+            // Total row
+            rows.push([
+                res.date || '',
+                res.invoice_number || '',
+                res.company || '',
+                '>>> TOTAL',
+                res.amount || ''
+            ].join('\t'));
+            rows.push(['', '', '', '', ''].join('\t')); // Spacer
+        } else {
+            rows.push([
+                res.date || '',
+                res.invoice_number || '',
+                res.company || '',
+                res.details || '',
+                res.amount || ''
+            ].join('\t'));
+        }
+    });
 
     const tsvContent = [header, ...rows].join('\n');
 
