@@ -1,7 +1,12 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.3.2-blue)
+![Version](https://img.shields.io/badge/version-v1.4.0-blue)
 All notable changes to this project will be documented in this file.
+
+## [v1.4.0] - 2026-01-08
+### Added
+- **Detailed Extraction Mode**: New toggle switch allows you to choose between "Summarized" (concise) and "Detailed" (full itemized breakdown) modes.
+- **Enhanced Formatting**: Detailed mode exports include line items, taxes, discounts, and subtotals formatted as multi-line text within the existing spreadsheet structure.
 
 ## [v1.3.2] - 2026-01-07
 ### Changed

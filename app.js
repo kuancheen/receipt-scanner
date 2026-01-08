@@ -311,6 +311,7 @@ function updateAuthState(isSignedIn) {
 async function startBatchProcessing() {
     if (isProcessing) return;
 
+    const mode = document.querySelector('input[name="extraction-mode"]:checked').value;
     const apiKey = config['gemini-api-key'];
     if (!apiKey) {
         showMessage('Please enter your Gemini API Key in the Configuration section.', 'error', 'scan-status');
@@ -340,7 +341,7 @@ async function startBatchProcessing() {
             renderResultsTable();
 
             try {
-                const result = await summarizeReceipt(item.file, apiKey);
+                const result = await summarizeReceipt(item.file, apiKey, mode);
                 item.status = 'completed';
                 item.result = result;
                 processedResults.push(result);
@@ -358,14 +359,20 @@ async function startBatchProcessing() {
     }
 }
 
-async function summarizeReceipt(file, apiKey) {
+async function summarizeReceipt(file, apiKey, mode = 'summary') {
     const base64Data = await fileToBase64(file);
     const mimeType = file.type;
+
+    let detailsPrompt = `"details": "A concise summary of what was purchased, highlighting one or two notable items as examples"`;
+
+    if (mode === 'detail') {
+        detailsPrompt = `"details": "A single multi-line string containing the full list of items. Start with '--- Details ---\\n' followed by each line item (Name: Price) on a new line. Then add '--- Breakdown ---\\n' followed by Subtotal, Tax, Discount, etc., on new lines."`;
+    }
 
     const prompt = `Analyze this receipt. Extract and summarize the purchase into a JSON format with these exact keys:
 "date": "Date of purchase (YYYY-MM-DD)",
 "company": "The name of the company or seller that issued the receipt",
-"details": "A concise summary of what was purchased, highlighting one or two notable items as examples",
+${detailsPrompt},
 "amount": "The total amount paid as a number (without currency symbols)"
 
 CONTEXT:

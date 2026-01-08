@@ -83,6 +83,17 @@
                 </div>
                 <div id="preview-container" class="hidden">
                     <div id="file-list-preview" class="file-list"></div>
+
+                    <div class="mode-toggle-group">
+                        <label class="toggle-label">Extraction Mode:</label>
+                        <div class="switch-field">
+                            <input type="radio" id="mode-summary" name="extraction-mode" value="summary" checked />
+                            <label for="mode-summary">Summarized</label>
+                            <input type="radio" id="mode-detail" name="extraction-mode" value="detail" />
+                            <label for="mode-detail">Detailed</label>
+                        </div>
+                    </div>
+
                     <div class="preview-actions">
                         <button id="reset-btn" class="btn outline">🔄 Start Over</button>
                         <button id="scan-btn" class="btn primary">Summarize all with AI</button>
@@ -125,7 +136,7 @@
 
         <footer>
             <p>
-                v1.3.2 |
+                v1.4.0 |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/README.md"
                     target="_blank">README</a> |
                 <a href="https://kuancheen.github.io/md-viewer/?https://github.com/kuancheen/receipt-scanner/blob/main/CHANGELOG.md"
@@ -137,7 +148,7 @@
             </p>
         </footer>
     </div>
-    <script src="app.js?v=1.3.2"></script>
+    <script src="app.js?v=1.4.0"></script>
     <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 
     <!-- Global Modal System -->
