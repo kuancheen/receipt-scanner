@@ -1,7 +1,11 @@
 # Changelog
 
-![Version](https://img.shields.io/badge/version-v1.5.4-blue)
+![Version](https://img.shields.io/badge/version-v1.5.5-blue)
 All notable changes to this project will be documented in this file.
+
+## [v1.5.5] - 2026-01-24
+### Changed
+- **Model Migration**: Migrated from `gemini-2.0-flash` to `gemini-2.5-flash` as the 2.0 models are being discontinued by Google.
 
 ## [v1.5.4] - 2026-01-08
 ### Changed

@@ -6,7 +6,7 @@ if (typeof pdfjsLib !== 'undefined') {
 // Configuration management
 const CONFIG_KEYS = ['gemini-api-key', 'oauth-client-id', 'spreadsheet-id'];
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
-const GEMINI_MODEL = 'gemini-2.0-flash';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 const config = {};
 
 // Google Auth State
